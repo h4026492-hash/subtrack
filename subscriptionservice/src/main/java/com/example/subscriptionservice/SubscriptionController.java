@@ -53,6 +53,22 @@ public class SubscriptionController {
         }
     }
 
+    @GetMapping("/total")
+    public ResponseEntity<java.util.Map<String, Double>> total(@RequestHeader(name = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+        String token = authHeader.substring(7);
+        try {
+            var claims = jwtService.parseToken(token);
+            String email = claims.getSubject();
+            double total = repository.sumForOwner(email);
+            return ResponseEntity.ok(java.util.Map.of("total", total));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Subscription> create(@RequestHeader(name = "Authorization", required = false) String authHeader,
                                                @RequestBody Map<String, Object> body) {

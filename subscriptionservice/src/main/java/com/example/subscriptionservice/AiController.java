@@ -126,6 +126,29 @@ public class AiController {
         }
     }
 
+    @PostMapping("/chat")
+    public ResponseEntity<Map<String, String>> chat(@RequestHeader(name = "Authorization", required = false) String authHeader,
+                                                    @RequestBody Map<String, Object> body) throws Exception {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+        }
+        String token = authHeader.substring(7);
+        try {
+            Claims claims = jwtService.parseToken(token);
+            String owner = claims.getSubject();
+            // rate limit per owner
+            if (!rateLimiterService.allow(owner)) {
+                return ResponseEntity.status(429).body(Map.of("error", "Rate limit exceeded"));
+            }
+
+            String prompt = (String) body.getOrDefault("prompt", "");
+            String reply = aiService.getInsight(prompt);
+            return ResponseEntity.ok(Map.of("reply", reply));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
+        }
+    }
+
     // attempt to parse assistant response content as JSON to extract structured fields
     private java.util.Map<String, Object> tryParseJson(String text) {
         try {

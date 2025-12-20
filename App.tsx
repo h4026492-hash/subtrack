@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Text, View, FlatList, ActivityIndicator } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import 'react-native-reanimated';
 import { getSubscriptions } from "./src/api/subscriptionApi";
 import type { Subscription } from "./src/api/types";
 

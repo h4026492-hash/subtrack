@@ -1,21 +1,22 @@
-import { View, Text, ScrollView, Pressable } from "react-native";
+
 import { useRouter } from "expo-router";
-import Animated, {
-  SlideInUp,
-  Layout,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  useAnimatedScrollHandler,
-  useAnimatedProps,
-  useDerivedValue,
-  runOnJS,
-  withTiming,
-  FadeIn,
-} from 'react-native-reanimated';
 import React from 'react';
-import { getSubscriptions } from '../src/api/subscriptionApi';
+import { Pressable, Text, View } from "react-native";
+import Animated, {
+    FadeIn,
+    Layout,
+    runOnJS,
+    SlideInUp,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useDerivedValue,
+    useSharedValue,
+    withSpring,
+    withTiming
+} from 'react-native-reanimated';
 import { getAiInsight } from '../src/api/aiApi';
+import { getSubscriptions } from '../src/api/subscriptionApi';
+import { getTotalSpend } from '../src/api/dashboardApi';
 import type { Subscription } from '../src/api/types';
 
 export default function DashboardScreen() {
@@ -46,8 +47,17 @@ export default function DashboardScreen() {
       .then((data) => {
         if (!mounted) return;
         setSubscriptions(data);
+        // keep per-subscription total as fallback
         const total = data.reduce((s, it) => s + (it.price ?? 0), 0);
         totalShared.value = withTiming(total, { duration: 800 });
+      })
+      .catch(() => {});
+
+    // Prefer authoritative backend total if available
+    getTotalSpend()
+      .then((t) => {
+        if (!mounted) return;
+        totalShared.value = withTiming(t, { duration: 800 });
       })
       .catch(() => {});
 

@@ -38,4 +38,20 @@ public class SubscriptionControllerTest {
                         .contentType("application/json").content("{\"name\":\"Test\",\"amount\":5}"))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void total_requiresAuth() throws Exception {
+        mockMvc.perform(get("/subscriptions/total")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void total_withToken_returnsTotal() throws Exception {
+        repository.createForOwner("a@b.com", "X", 10.0);
+        repository.createForOwner("a@b.com", "Y", 15.0);
+        String token = jwtService.generateToken("a@b.com");
+
+        mockMvc.perform(get("/subscriptions/total").header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.total").exists());
+    }
 }

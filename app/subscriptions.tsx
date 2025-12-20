@@ -1,122 +1,117 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, View, Text, ActivityIndicator, Pressable } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
-import Animated, { FadeIn, Layout } from 'react-native-reanimated';
-import { getSubscriptions } from '../src/api/subscriptionApi';
-import type { Subscription } from '../src/api/types';
-import { Colors } from '../src/theme/colors';
-import { Spacing } from '../src/theme/spacing';
-import { getSubscriptionInsight } from '../src/api/aiApi';
+import {
+  View,
+  Text,
+  ScrollView,
+  Animated,
+  Pressable,
+} from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { getSubscriptionInsight } from "../src/api/subscriptionApi";
+import { useRouter } from "expo-router";
+import { getSubscriptions } from "../src/api/subscriptionApi";
 
-export default function SubscriptionsScreen() {
-  const focused = useIsFocused();
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetch = () => {
-    setLoading(true);
-    setError(null);
-    getSubscriptions()
-      .then(setSubscriptions)
-      .catch((e) => setError(e?.message ?? 'Failed to load'))
-      .finally(() => setLoading(false));
-  };
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      const data = await getSubscriptions();
-      setSubscriptions(data);
-    } catch (err) {
-      // ignore for now
-    } finally {
-      setRefreshing(false);
-    }
-  };
+export default function Subscriptions() {
+  const router = useRouter();
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
-    if (focused) fetch();
-  }, [focused]);
+    getSubscriptions().then(setSubscriptions);
 
-  if (loading) return <ActivityIndicator style={{ margin: 40 }} />;
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.background, padding: Spacing.lg }}>
-      <Text style={{ fontSize: 20, fontWeight: '600', marginBottom: Spacing.md, color: Colors.textPrimary }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#0B1220" }}
+      contentContainerStyle={{ padding: 24 }}
+    >
+      <Text style={{ fontSize: 28, color: "#fff", marginBottom: 20 }}>
         Subscriptions
       </Text>
 
-      {error ? (
-        <Text style={{ color: '#c44', marginBottom: Spacing.md }}>{`Error: ${error}`}</Text>
-      ) : (
-        <FlatList
-          data={subscriptions}
-          keyExtractor={(item) => item.id.toString()}
-          keyboardDismissMode="on-drag"
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          ItemSeparatorComponent={() => <View style={{ height: Spacing.sm }} />}
-          renderItem={({ item }) => <SubscriptionCard item={item} />}
-        />
+      {subscriptions.length === 0 && (
+        <Text style={{ color: "#9CA3AF", textAlign: "center", marginTop: 40 }}>
+          No subscriptions yet.
+        </Text>
       )}
-    </View>
+
+      {subscriptions.map((item) => (
+        <SubscriptionCard key={item.id} item={item} />
+      ))}
+
+      <Pressable
+        onPress={() => router.push("/add")}
+        style={({ pressed }) => ({
+          backgroundColor: "#4F8EF7",
+          padding: 16,
+          borderRadius: 16,
+          marginTop: 12,
+          opacity: pressed ? 0.85 : 1,
+          transform: [{ scale: pressed ? 0.97 : 1 }],
+        })}
+      >
+        <Text style={{ color: "#fff", textAlign: "center" }}>
+          Add Subscription
+        </Text>
+      </Pressable>
+    </ScrollView>
   );
 }
 
-function SubscriptionCard({ item }: { item: Subscription }) {
-  const [aiText, setAiText] = useState<string>('');
+function SubscriptionCard({ item }: { item: any }) {
+  const [insight, setInsight] = useState<string | null>(null);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(12)).current;
 
   useEffect(() => {
     let mounted = true;
+    // animate in
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 360, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 360, useNativeDriver: true }),
+    ]).start();
+
     getSubscriptionInsight(item.id)
-      .then((t) => mounted && setAiText(t))
+      .then((t) => mounted && setInsight(t))
       .catch(() => {});
+
     return () => {
       mounted = false;
     };
   }, [item.id]);
 
-  const nextBilling = item.nextBillingDate ? new Date(item.nextBillingDate).toLocaleDateString() : '—';
-
   return (
     <Animated.View
-      entering={FadeIn.duration(400)}
-      layout={Layout.springify()}
       style={{
-        backgroundColor: 'rgba(255,255,255,0.06)',
-        padding: Spacing.md,
-        borderRadius: 18,
-        borderColor: 'rgba(255,255,255,0.06)',
-        borderWidth: 1,
-        shadowColor: '#000',
-        shadowOpacity: 0.08,
-        shadowRadius: 10,
-        elevation: 3,
+        backgroundColor: "rgba(255,255,255,0.08)",
+        borderRadius: 20,
+        padding: 20,
+        marginBottom: 16,
+        opacity: fadeAnim,
+        transform: [{ translateY: slideAnim }],
       }}
     >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: Colors.textPrimary }}>{item.plan}</Text>
-          <Text style={{ color: Colors.textSecondary, marginTop: 4 }}>{`Next: ${nextBilling}`}</Text>
-        </View>
+      <Text style={{ fontSize: 18, color: "#fff", marginBottom: 6 }}>{item.name}</Text>
 
-        <View style={{ marginLeft: Spacing.md, alignItems: 'flex-end' }}>
-          <Text style={{ fontWeight: '700', color: Colors.textPrimary }}>${item.price.toFixed(2)}</Text>
-          <Text style={{ color: Colors.textSecondary, marginTop: 4 }}>{item.currency ?? 'USD'}</Text>
-        </View>
-      </View>
+      <Text style={{ color: "#9CA3AF", marginBottom: 6 }}>${item.amount} / month</Text>
 
-      <View style={{ marginTop: Spacing.sm, backgroundColor: 'rgba(10,132,255,0.06)', padding: Spacing.sm, borderRadius: 10 }}>
-        <Text style={{ fontSize: 12 }}>{aiText ? `🤖 ${aiText}` : '🤖 Analyzing...'}</Text>
-      </View>
+      <Text style={{ color: "#7DD3FC", fontSize: 12 }}>Category: {item.category}</Text>
 
-      <View style={{ marginTop: Spacing.sm, flexDirection: 'row', justifyContent: 'flex-end', gap: Spacing.sm }}>
-        <Pressable style={{ paddingVertical: 8, paddingHorizontal: 12 }}>
-          <Text style={{ color: Colors.primary, fontWeight: '600' }}>Manage</Text>
-        </Pressable>
-      </View>
+      <Text style={{ color: "#A5B4FC", fontSize: 12, marginTop: 6 }}>{insight ? `🤖 ${insight}` : '🤖 Analyzing usage…'}</Text>
     </Animated.View>
   );
 }
+

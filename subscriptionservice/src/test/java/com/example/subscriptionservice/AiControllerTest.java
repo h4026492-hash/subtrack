@@ -59,6 +59,24 @@ public class AiControllerTest {
         }
 
         @Test
+        void chat_requiresAuth() throws Exception {
+            mockMvc.perform(post("/ai/chat").contentType("application/json").content("{\"prompt\":\"hi\"}"))
+                .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void chat_withValidToken_returnsReply() throws Exception {
+            when(aiService.getInsight(org.mockito.ArgumentMatchers.anyString())).thenReturn("Hello from AI");
+
+            String token = jwtService.generateToken("a@b.com");
+
+            mockMvc.perform(post("/ai/chat").header("Authorization", "Bearer " + token)
+                    .contentType("application/json").content("{\"prompt\":\"Which subscription to cancel?\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.reply").exists());
+        }
+
+        @Test
         void prediction_returnsText() throws Exception {
         repository.createForOwner("a@b.com", "X", 1.0);
         when(aiService.getInsight(org.mockito.ArgumentMatchers.anyString())).thenReturn("Next month predicted spend: $123");
