@@ -1,16 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, View, Text, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors } from '../src/theme/colors';
-import { Spacing } from '../src/theme/spacing';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
+import { getAiInsight } from '../src/api/aiApi';
+import { Colors } from '../src/theme/colors';
+import { Spacing } from '../src/theme/spacing';
 
 export default function DashboardScreen() {
   const router = useRouter();
   const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [aiInsight, setAiInsight] = useState<string>('');
 
   useEffect(() => {
     let mounted = true;
@@ -23,6 +25,11 @@ export default function DashboardScreen() {
         if (mounted) setError(err?.message ?? 'Failed to load');
       })
       .finally(() => mounted && setLoading(false));
+
+    // fetch AI insight (non-blocking)
+    getAiInsight()
+      .then((insight) => mounted && setAiInsight(insight))
+      .catch(() => {});
 
     return () => {
       mounted = false;
@@ -58,27 +65,29 @@ export default function DashboardScreen() {
         padding: Spacing.lg,
       }}
     >
-      <Text
+      <LinearGradient
+        colors={["#0A84FF", "#5AC8FA"]}
         style={{
-          fontSize: 28,
-          fontWeight: '600',
-          color: Colors.textPrimary,
-          marginBottom: Spacing.md,
-        }}
-      >
-        This Month
-      </Text>
-
-      <Text
-        style={{
-          fontSize: 36,
-          fontWeight: '700',
-          color: Colors.primary,
+          padding: Spacing.xl,
+          borderRadius: 20,
           marginBottom: Spacing.lg,
         }}
       >
-        ${total.toFixed(2)}
-      </Text>
+        <Text style={{ color: '#fff', fontSize: 28, fontWeight: '700' }}>${total.toFixed(2)}</Text>
+        <Text style={{ color: '#E5F2FF', marginTop: 4 }}>Monthly Spend</Text>
+      </LinearGradient>
+
+      <View
+        style={{
+          backgroundColor: 'rgba(255,255,255,0.75)',
+          padding: Spacing.md,
+          borderRadius: 16,
+          marginBottom: Spacing.lg,
+        }}
+      >
+        <Text style={{ fontWeight: '600', marginBottom: 4 }}>🤖 AI Insight</Text>
+        <Text style={{ color: Colors.textSecondary }}>{aiInsight || 'Analyzing your subscriptions...'}</Text>
+      </View>
 
       <View
         style={{
