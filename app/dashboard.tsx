@@ -3,7 +3,9 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
-import { getAiInsight } from '../src/api/aiApi';
+import { getAiInsight, getAiPrediction } from '../src/api/aiApi';
+import { LineChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 import { deleteToken } from '../src/auth/token';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
@@ -16,6 +18,7 @@ export default function DashboardScreen() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string>('');
+  const [prediction, setPrediction] = useState<string>('');
 
   useEffect(() => {
     let mounted = true;
@@ -33,6 +36,9 @@ export default function DashboardScreen() {
     getAiInsight()
       .then((insight) => mounted && setAiInsight(insight))
       .catch(() => {});
+
+    // prediction
+    getAiPrediction().then((p) => mounted && setPrediction(p)).catch(() => {});
 
     return () => {
       mounted = false;
@@ -111,6 +117,24 @@ export default function DashboardScreen() {
           {activeCount}
         </Text>
       </Animated.View>
+
+      <LineChart
+        data={{
+          labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+          datasets: [{ data: [80, 95, 110, 126] }],
+        }}
+        width={Dimensions.get('window').width - 40}
+        height={180}
+        chartConfig={{
+          backgroundColor: Colors.background,
+          backgroundGradientFrom: Colors.background,
+          backgroundGradientTo: Colors.background,
+          color: () => Colors.primary,
+        }}
+        style={{ marginTop: Spacing.lg, borderRadius: 16 }}
+      />
+
+      <Text style={{ marginTop: Spacing.md, color: Colors.textSecondary }}>{`🤖 AI Prediction: ${prediction || 'Analyzing...'}`}</Text>
 
       <Pressable
         onPress={() => router.push('/subscriptions')}

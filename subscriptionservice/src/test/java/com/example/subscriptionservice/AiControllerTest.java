@@ -25,6 +25,9 @@ public class AiControllerTest {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private SubscriptionRepository repository;
+
     @Test
     void insight_requiresAuth() throws Exception {
         mockMvc.perform(get("/ai/insight")).andExpect(status().isUnauthorized());
@@ -32,12 +35,38 @@ public class AiControllerTest {
 
     @Test
     void insight_withValidToken_returnsInsight() throws Exception {
-        when(aiService.getInsight("Analyze my subscriptions and give spending insight.")).thenReturn("You are spending more on subscriptions.");
+        // seed a subscription for user
+        repository.createForOwner("a@b.com", "Netflix", 15.0);
+        when(aiService.getInsight(org.mockito.ArgumentMatchers.anyString())).thenReturn("You are spending more on subscriptions.");
 
         String token = jwtService.generateToken("a@b.com");
 
         mockMvc.perform(get("/ai/insight").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.insight").exists());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.insight").exists());
     }
+
+        @Test
+        void subscriptionAi_returnsAdvice() throws Exception {
+        Subscription s = repository.createForOwner("a@b.com", "Test", 5.0);
+        when(aiService.getInsight(org.mockito.ArgumentMatchers.anyString())).thenReturn("Consider downgrading.");
+
+        String token = jwtService.generateToken("a@b.com");
+
+        mockMvc.perform(get("/ai/subscription/" + s.getId()).header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.insight").exists());
+        }
+
+        @Test
+        void prediction_returnsText() throws Exception {
+        repository.createForOwner("a@b.com", "X", 1.0);
+        when(aiService.getInsight(org.mockito.ArgumentMatchers.anyString())).thenReturn("Next month predicted spend: $123");
+
+        String token = jwtService.generateToken("a@b.com");
+
+        mockMvc.perform(get("/ai/prediction").header("Authorization", "Bearer " + token))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.prediction").exists());
+        }
 }

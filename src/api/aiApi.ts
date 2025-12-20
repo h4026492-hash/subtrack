@@ -7,3 +7,13 @@ export const getAiInsight = async (): Promise<string> => {
   if (typeof data === 'string') return data;
   return data?.insight ?? '';
 };
+
+export const getSubscriptionInsight = async (id: number): Promise<string> => {
+  const res = await apiClient.get(`/ai/subscription/${id}`);
+  return res.data?.insight ?? '';
+};
+
+export const getAiPrediction = async (): Promise<string> => {
+  const res = await apiClient.get('/ai/prediction');
+  return res.data?.prediction ?? '';
+};
