@@ -1,3 +1,37 @@
+# Subtrack – Subscription Management App
+
+A full-stack subscription tracking application built with:
+
+• React Native (Expo)  
+• React Web  
+• Spring Boot microservices  
+
+## Features
+• Track monthly subscriptions  
+• Real-time backend integration  
+• Mobile & web clients  
+• Clean iOS-style UI  
+
+## Tech Stack
+Frontend: React, React Native, Expo Router  
+Backend: Java 17, Spring Boot, REST APIs  
+Tools: GitHub Copilot, Git, Maven  
+
+## Running Locally
+
+### Backend
+```bash
+cd subscriptionservice
+./mvnw spring-boot:run
+```
+
+### Mobile
+
+```bash
+cd subtrack-mobile
+npm install
+npm start
+```
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
