@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
 import { getAiInsight } from '../src/api/aiApi';
