@@ -1,0 +1,41 @@
+package com.example.subscriptionservice;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class SubscriptionControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Test
+    void list_requiresAuth() throws Exception {
+        mockMvc.perform(get("/subscriptions")).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void list_withToken_returnsList() throws Exception {
+        String token = jwtService.generateToken("a@b.com");
+        mockMvc.perform(get("/subscriptions").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
+    }
+
+    @Test
+    void create_withToken_creates() throws Exception {
+        String token = jwtService.generateToken("a@b.com");
+        mockMvc.perform(post("/subscriptions").header("Authorization", "Bearer " + token)
+                        .contentType("application/json").content("{\"name\":\"Test\",\"amount\":5}"))
+                .andExpect(status().isOk());
+    }
+}
