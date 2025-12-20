@@ -13,6 +13,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const onLogin = async () => {
+    console.log('LOGIN PRESSED', { email });
     setError(null);
     setLoading(true);
     try {

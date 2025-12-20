@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { Stack } from "expo-router";
 import { Colors } from "../src/theme/colors";
 
@@ -9,7 +10,8 @@ export default function RootLayout() {
         headerTitleStyle: { color: Colors.textPrimary },
       }}
     >
-      <Stack.Screen name="index" options={{ title: "Dashboard" }} />
+      <Stack.Screen name="index" />
+      <Stack.Screen name="dashboard" options={{ title: "Dashboard" }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen
         name="subscriptions"
