@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, View, Text } from 'react-native';
+import { ActivityIndicator, View, Text, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 import { Colors } from '../src/theme/colors';
 import { Spacing } from '../src/theme/spacing';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
 
 export default function DashboardScreen() {
+  const router = useRouter();
   const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,18 @@ export default function DashboardScreen() {
           {activeCount}
         </Text>
       </View>
+
+      <Pressable
+        onPress={() => router.push('/subscriptions')}
+        style={{
+          marginTop: Spacing.lg,
+          backgroundColor: Colors.primary,
+          padding: Spacing.md,
+          borderRadius: 12,
+        }}
+      >
+        <Text style={{ color: '#fff', textAlign: 'center', fontWeight: '600' }}>View Subscriptions</Text>
+      </Pressable>
     </View>
   );
 }
