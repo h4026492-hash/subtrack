@@ -23,7 +23,16 @@ export default function LoginScreen() {
       await setToken(token);
       router.replace('/dashboard');
     } catch (err: any) {
-      setError(err?.message ?? 'Login failed');
+      // Provide clearer error message including HTTP status and server body when available
+      if (err?.response) {
+        const status = err.response.status;
+        const data = JSON.stringify(err.response.data);
+        console.error('Login error', status, err.response.data);
+        setError(`Server: ${status} ${data}`);
+      } else {
+        console.error('Login error', err);
+        setError(err?.message ?? 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
