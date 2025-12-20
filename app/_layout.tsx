@@ -10,6 +10,7 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: "Dashboard" }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen
         name="subscriptions"
         options={{ title: "Subscriptions" }}
