@@ -1,5 +1,5 @@
 import { View, Text, TextInput, ScrollView, Pressable } from "react-native";
-import { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { askAi } from "../src/api/aiApi";
 
 export default function AiScreen() {
@@ -27,7 +27,7 @@ export default function AiScreen() {
         const partial = res.slice(0, i);
         setMessages((m) => m.map((item, idx) => (idx === currentIndex ? `AI: ${partial}` : item)));
         if (i < res.length) {
-          typingRef.current = window.setTimeout(step, 20 + Math.random() * 30);
+          typingRef.current = setTimeout(step, 20 + Math.random() * 30) as unknown as number;
         }
       };
       step();
@@ -35,6 +35,13 @@ export default function AiScreen() {
       setMessages((m) => m.map((item, idx) => (idx === currentIndex ? `AI: (error)` : item)));
     }
   }
+
+  // cleanup typing timers on unmount
+  useEffect(() => {
+    return () => {
+      if (typingRef.current) clearTimeout(typingRef.current);
+    };
+  }, []);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#0B1220", padding: 16 }}>

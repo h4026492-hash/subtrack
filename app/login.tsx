@@ -1,10 +1,28 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import React, { useState } from "react";
+import { login } from "../src/api/authApi";
+import { setToken } from "../src/auth/token";
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const token = await login(email, password);
+      await setToken(token);
+      router.replace("/dashboard");
+    } catch (e) {
+      // simple error handling
+      alert("Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View
@@ -22,7 +40,7 @@ export default function Login() {
           padding: 24,
         }}
       >
-        <Text style={{ fontSize: 28, color: "#fff", marginBottom: 8 }}>Subtrack</Text>
+        <Text style={{ fontSize: 28, color: "#fff", marginBottom: 8 }}>SubTrack</Text>
 
         <Text style={{ color: "#9CA3AF", marginBottom: 24 }}>
           Track and optimize your subscriptions
@@ -33,6 +51,22 @@ export default function Login() {
           placeholderTextColor="#9CA3AF"
           value={email}
           onChangeText={setEmail}
+          autoCapitalize="none"
+          style={{
+            backgroundColor: "rgba(255,255,255,0.12)",
+            padding: 16,
+            borderRadius: 14,
+            color: "#fff",
+            marginBottom: 12,
+          }}
+        />
+
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#9CA3AF"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
           style={{
             backgroundColor: "rgba(255,255,255,0.12)",
             padding: 16,
@@ -43,16 +77,22 @@ export default function Login() {
         />
 
         <Pressable
-          onPress={() => router.replace("/dashboard")}
+          onPress={handleLogin}
+          disabled={loading}
           style={({ pressed }) => ({
             backgroundColor: "#4F8EF7",
             padding: 16,
             borderRadius: 16,
             opacity: pressed ? 0.8 : 1,
             transform: [{ scale: pressed ? 0.97 : 1 }],
+            alignItems: 'center',
           })}
         >
-          <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>Login</Text>
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>Login</Text>
+          )}
         </Pressable>
       </View>
     </View>

@@ -25,4 +25,16 @@ public class AuthController {
         String token = jwtService.generateToken(email);
         return ResponseEntity.ok(Map.of("token", token));
     }
+
+    // Simple interview-friendly auth endpoint
+    @PostMapping("/auth/login")
+    public ResponseEntity<Map<String, String>> authLogin(@RequestBody LoginRequest req) {
+        if (req == null || req.getEmail() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "email required"));
+        }
+        if ("test@test.com".equals(req.getEmail())) {
+            return ResponseEntity.ok(Map.of("token", "jwt-demo-token"));
+        }
+        return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
+    }
 }

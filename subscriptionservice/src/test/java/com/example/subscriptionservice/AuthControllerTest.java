@@ -23,4 +23,17 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").exists());
     }
+
+    @Test
+    void authLogin_demoToken_forTestEmail() throws Exception {
+        mockMvc.perform(post("/auth/login").contentType("application/json").content("{\"email\":\"test@test.com\",\"password\":\"x\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").value("jwt-demo-token"));
+    }
+
+    @Test
+    void authLogin_invalid_returns401() throws Exception {
+        mockMvc.perform(post("/auth/login").contentType("application/json").content("{\"email\":\"foo@bar.com\",\"password\":\"x\"}"))
+                .andExpect(status().isUnauthorized());
+    }
 }
