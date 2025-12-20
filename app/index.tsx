@@ -1,95 +1,103 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, View, Text } from 'react-native';
+import { Colors } from '../src/theme/colors';
+import { Spacing } from '../src/theme/spacing';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
 
 export default function DashboardScreen() {
-  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getSubscriptions();
-      setSubscriptions(data);
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to load subscriptions');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    load();
+    let mounted = true;
+    setLoading(true);
+    getSubscriptions()
+      .then((data) => {
+        if (mounted) setSubscriptions(data);
+      })
+      .catch((err) => {
+        if (mounted) setError(err?.message ?? 'Failed to load');
+      })
+      .finally(() => mounted && setLoading(false));
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>
-        My Subscriptions
-      </ThemedText>
+  const total = useMemo(() => {
+    if (!subscriptions) return 0;
+    return subscriptions.reduce((s, it) => s + (it.price ?? 0), 0);
+  }, [subscriptions]);
 
-      {loading ? (
-        <View style={styles.center}>
-          <ActivityIndicator />
-        </View>
-      ) : error ? (
-        <View style={styles.center}>
-          <ThemedText style={styles.error}>Error: {error}</ThemedText>
-          <TouchableOpacity onPress={load} style={styles.retryButton}>
-            <ThemedText type="link">Retry</ThemedText>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <FlatList
-          data={subscriptions}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
-            <View style={styles.item}>
-              <ThemedText type="defaultSemiBold">{item.plan}</ThemedText>
-              <ThemedText>${item.price.toFixed(2)}</ThemedText>
-            </View>
-          )}
-        />
-      )}
-    </ThemedView>
+  if (loading)
+    return (
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+
+  if (error)
+    return (
+      <View style={{ flex: 1, padding: Spacing.lg }}>
+        <Text style={{ color: '#c44' }}>Error: {error}</Text>
+      </View>
+    );
+
+  const activeCount = subscriptions?.length ?? 0;
+
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: Colors.background,
+        padding: Spacing.lg,
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 28,
+          fontWeight: '600',
+          color: Colors.textPrimary,
+          marginBottom: Spacing.md,
+        }}
+      >
+        This Month
+      </Text>
+
+      <Text
+        style={{
+          fontSize: 36,
+          fontWeight: '700',
+          color: Colors.primary,
+          marginBottom: Spacing.lg,
+        }}
+      >
+        ${total.toFixed(2)}
+      </Text>
+
+      <View
+        style={{
+          backgroundColor: Colors.card,
+          padding: Spacing.md,
+          borderRadius: 12,
+        }}
+      >
+        <Text style={{ color: Colors.textSecondary }}>Active Subscriptions</Text>
+
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: '600',
+            color: Colors.textPrimary,
+          }}
+        >
+          {activeCount}
+        </Text>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    marginBottom: 16,
-  },
-  center: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  error: {
-    marginBottom: 8,
-    color: '#c44',
-  },
-  retryButton: {
-    padding: 8,
-  },
-  list: {
-    paddingBottom: 40,
-  },
-  item: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
-  },
-});
 
