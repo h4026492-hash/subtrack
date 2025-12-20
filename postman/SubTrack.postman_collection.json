@@ -6,6 +6,20 @@
   "item": [
     {
       "name": "Auth - demo login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login succeeded', function () { pm.response.to.have.status(200); });",
+              "var json = pm.response.json();",
+              "pm.test('token exists', function(){ pm.expect(json.token).to.exist; });",
+              "pm.environment.set('token', json.token);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -19,9 +33,26 @@
       "item": [
         {
           "name": "Create Subscription",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('create subscription returns 200', function(){ pm.response.to.have.status(200); });",
+                  "var j = pm.response.json();",
+                  "pm.test('has id', function(){ pm.expect(j.id).to.exist; });",
+                  "pm.environment.set('lastSubscriptionId', j.id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
             "body": { "mode": "raw", "raw": "{ \"name\": \"Test\", \"amount\": 9.99 }" },
             "url": { "raw": "{{baseUrl}}/subscriptions", "host": ["{{baseUrl}}"], "path": ["subscriptions"] }
           }
@@ -30,6 +61,7 @@
           "name": "List Subscriptions",
           "request": {
             "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
             "url": { "raw": "{{baseUrl}}/subscriptions", "host": ["{{baseUrl}}"], "path": ["subscriptions"] }
           }
         }
