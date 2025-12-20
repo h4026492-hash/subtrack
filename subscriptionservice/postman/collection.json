@@ -1,0 +1,27 @@
+{
+  "info": {
+    "name": "Subtrack Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{ \"email\": \"dev@me.com\" }" },
+        "url": { "raw": "http://localhost:8081/login", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["login"] }
+      }
+    },
+    {
+      "name": "AI Insight (requires token)",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "http://localhost:8081/ai/insight", "protocol": "http", "host": ["localhost"], "port": "8081", "path": ["ai", "insight"] }
+      }
+    }
+  ]
+}
