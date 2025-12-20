@@ -111,6 +111,18 @@ export default function DashboardScreen() {
       >
         <Text style={{ color: '#fff', textAlign: 'center', fontWeight: '600' }}>View Subscriptions</Text>
       </Pressable>
+
+      <Pressable
+        onPress={() => router.push('/add')}
+        style={{
+          marginTop: Spacing.md,
+          backgroundColor: Colors.card,
+          padding: Spacing.md,
+          borderRadius: 12,
+        }}
+      >
+        <Text style={{ textAlign: 'center', fontWeight: '600' }}>Add Subscription</Text>
+      </Pressable>
     </View>
   );
 }

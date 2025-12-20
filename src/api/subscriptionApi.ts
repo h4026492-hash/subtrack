@@ -6,3 +6,8 @@ export const getSubscriptions = async (): Promise<Subscription[]> => {
   return res.data;
 };
 
+export const addSubscription = async (subscription: { name: string; amount: number }) => {
+  const res = await apiClient.post<Subscription>('/subscriptions', subscription);
+  return res.data;
+};
+

@@ -14,6 +14,7 @@ export default function RootLayout() {
         name="subscriptions"
         options={{ title: "Subscriptions" }}
       />
+      <Stack.Screen name="add" options={{ title: "Add Subscription" }} />
     </Stack>
   );
 }
