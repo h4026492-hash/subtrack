@@ -51,9 +51,9 @@ public class Subscription {
     public String toString() {
         return "Subscription{" +
                 "id=" + id +
-                ", name='" + name + '\\'' +
+                ", name='" + name + '\'' +
                 ", price=" + price +
-                ", owner='" + owner + '\\'' +
+                ", owner='" + owner + '\'' +
                 '}';
     }
 }
