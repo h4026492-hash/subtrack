@@ -1,7 +1,7 @@
 name: CI
 
 on:
-  push:
+          node-version: '20'
     branches: [ main, master, '**' ]
   pull_request:
     branches: [ main, master ]
@@ -15,7 +15,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+        working-directory: ./subscriptionservice
+        run: mvn -B test
 
       - name: Install dependencies
         run: npm ci
@@ -30,7 +31,8 @@ jobs:
           java-version: '17'
 
       - name: Run backend tests
-        run: mvn -B -pl subscriptionservice test
+        working-directory: ./subscriptionservice
+        run: mvn -DskipTests -q spring-boot:run &
 
   postman:
     runs-on: ubuntu-latest
