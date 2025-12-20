@@ -14,6 +14,9 @@ import Animated, {
   FadeIn,
 } from 'react-native-reanimated';
 import React from 'react';
+import { getSubscriptions } from '../src/api/subscriptionApi';
+import { getAiInsight } from '../src/api/aiApi';
+import type { Subscription } from '../src/api/types';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -31,14 +34,34 @@ export default function DashboardScreen() {
     runOnJS(setDisplayTotal)(Number(totalShared.value.toFixed(2)));
     return totalShared.value;
   });
+  // Fetch real data and animate total + AI insight
+  const [subscriptions, setSubscriptions] = React.useState<Subscription[] | null>(null);
+  const [aiInsight, setAiInsight] = React.useState<string>('');
+  const [aiKey, setAiKey] = React.useState<string>('ai-init');
+
   React.useEffect(() => {
-    // demo animation: animate to a target value so the number transitions smoothly
-    totalShared.value = withTiming(126.4, { duration: 800 });
-    // show a different AI insight a bit later to demonstrate text transition
-    const t = setTimeout(() => {
-      // no-op for now (kept to demo how you'd trigger AI text changes)
-    }, 3000);
-    return () => clearTimeout(t);
+    let mounted = true;
+
+    getSubscriptions()
+      .then((data) => {
+        if (!mounted) return;
+        setSubscriptions(data);
+        const total = data.reduce((s, it) => s + (it.price ?? 0), 0);
+        totalShared.value = withTiming(total, { duration: 800 });
+      })
+      .catch(() => {});
+
+    getAiInsight()
+      .then((ins) => {
+        if (!mounted) return;
+        setAiInsight(ins);
+        setAiKey(ins.slice(0, 20));
+      })
+      .catch(() => {});
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -49,16 +72,25 @@ export default function DashboardScreen() {
       contentContainerStyle={{ padding: 20 }}
     >
       {/* Header */}
-      <Text
-        style={{
-          fontSize: 28,
-          fontWeight: "600",
-          color: "#fff",
-          marginBottom: 24,
-        }}
+      <Animated.Text
+        style={[
+          {
+            fontSize: 28,
+            fontWeight: '600',
+            color: '#fff',
+            marginBottom: 24,
+          },
+          useAnimatedStyle(() => {
+            const t = Math.min(scrollY.value / 200, 1);
+            return {
+              transform: [{ translateY: -t * 8 }, { scale: 1 - t * 0.04 }],
+              opacity: 1 - t * 0.15,
+            };
+          }),
+        ]}
       >
         Dashboard
-      </Text>
+      </Animated.Text>
 
       {/* Glass Card – Monthly Spend */}
       <Animated.View
@@ -96,11 +128,8 @@ export default function DashboardScreen() {
       >
         <Text style={{ color: "#aaa", marginBottom: 8 }}>AI Insight</Text>
 
-        <Animated.View entering={FadeIn.duration(350)} key={"ai-1"}>
-          <Text style={{ color: "#fff", lineHeight: 22 }}>
-            You are spending more on entertainment subscriptions. Consider
-            cancelling unused services to save approximately $18 per month.
-          </Text>
+        <Animated.View entering={FadeIn.duration(350)} key={aiKey}>
+          <Text style={{ color: '#fff', lineHeight: 22 }}>{aiInsight || 'Analyzing your subscriptions...'}</Text>
         </Animated.View>
       </Animated.View>
 
