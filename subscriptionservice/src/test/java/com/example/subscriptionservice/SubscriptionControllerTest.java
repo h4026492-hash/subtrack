@@ -8,6 +8,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -19,6 +20,9 @@ public class SubscriptionControllerTest {
 
     @Autowired
     private JwtService jwtService;
+    
+    @Autowired
+    private SubscriptionRepository repository;
 
     @Test
     void list_requiresAuth() throws Exception {
