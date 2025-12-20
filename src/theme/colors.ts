@@ -9,3 +9,10 @@ export const Colors = {
   primary: BaseColors.light.tint,
   card: '#FFFFFF',
 };
+
+export const DarkColors = {
+  background: '#000000',
+  card: '#1C1C1E',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#8E8E93',
+};

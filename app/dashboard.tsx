@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { getAiInsight } from '../src/api/aiApi';
 import { deleteToken } from '../src/auth/token';
 import { getSubscriptions } from '../src/api/subscriptionApi';
@@ -79,7 +80,7 @@ export default function DashboardScreen() {
         <Text style={{ color: '#E5F2FF', marginTop: 4 }}>Monthly Spend</Text>
       </LinearGradient>
 
-      <View
+      <Animated.View entering={FadeIn.duration(400)}
         style={{
           backgroundColor: 'rgba(255,255,255,0.75)',
           padding: Spacing.md,
@@ -89,9 +90,9 @@ export default function DashboardScreen() {
       >
         <Text style={{ fontWeight: '600', marginBottom: 4 }}>🤖 AI Insight</Text>
         <Text style={{ color: Colors.textSecondary }}>{aiInsight || 'Analyzing your subscriptions...'}</Text>
-      </View>
+      </Animated.View>
 
-      <View
+      <Animated.View entering={FadeIn.duration(400)}
         style={{
           backgroundColor: Colors.card,
           padding: Spacing.md,
@@ -109,7 +110,7 @@ export default function DashboardScreen() {
         >
           {activeCount}
         </Text>
-      </View>
+      </Animated.View>
 
       <Pressable
         onPress={() => router.push('/subscriptions')}

@@ -1,18 +1,19 @@
 // Screen for adding a new subscription
 // Simple form with name and monthly amount
 
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { addSubscription } from '../src/api/subscriptionApi';
 import { Colors } from '../src/theme/colors';
 import { Spacing } from '../src/theme/spacing';
-import { addSubscription } from '../src/api/subscriptionApi';
 
 export default function AddSubscriptionScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [saving, setSaving] = useState(false);
+  const [suggestion, setSuggestion] = useState('');
 
   const canSave = name.trim().length > 0 && !Number.isNaN(Number(amount)) && Number(amount) > 0 && !saving;
 
@@ -41,6 +42,19 @@ export default function AddSubscriptionScreen() {
         }}
       />
 
+      {name.toLowerCase().includes('netflix') && (
+        <View
+          style={{
+            backgroundColor: 'rgba(10,132,255,0.1)',
+            padding: Spacing.sm,
+            borderRadius: 10,
+            marginBottom: Spacing.md,
+          }}
+        >
+          <Text style={{ fontSize: 12 }}>🤖 AI Suggests: Typical Netflix plan is $15.99/month</Text>
+        </View>
+      )}
+
       <TextInput
         placeholder="Monthly amount"
         value={amount}
@@ -55,28 +69,25 @@ export default function AddSubscriptionScreen() {
       />
 
       <Pressable
+        disabled={!name || !amount}
         onPress={async () => {
-          if (!canSave) return;
-          setSaving(true);
-          try {
-            await addSubscription({ name: name.trim(), amount: Number(amount) });
-            router.back();
-          } catch (err) {
-            // For now, just console log — we can show a toast later
-            console.warn('Failed to save', err);
-          } finally {
-            setSaving(false);
-          }
+          await addSubscription({ name, amount: Number(amount) });
+          router.back();
         }}
         style={{
-          backgroundColor: canSave ? Colors.primary : Colors.card,
+          backgroundColor: name && amount ? Colors.primary : Colors.card,
           padding: Spacing.md,
-          borderRadius: 12,
+          borderRadius: 14,
         }}
-        disabled={!canSave}
       >
-        <Text style={{ color: canSave ? '#fff' : Colors.textSecondary, textAlign: 'center', fontWeight: '600' }}>
-          {saving ? 'Saving...' : 'Save'}
+        <Text
+          style={{
+            color: name && amount ? '#fff' : Colors.textSecondary,
+            textAlign: 'center',
+            fontWeight: '600',
+          }}
+        >
+          Save Subscription
         </Text>
       </Pressable>
     </View>
