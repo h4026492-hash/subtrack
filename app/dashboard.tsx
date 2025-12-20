@@ -1,10 +1,11 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { getAiInsight } from '../src/api/aiApi';
+import { deleteToken } from '../src/auth/token';
 import { getSubscriptions } from '../src/api/subscriptionApi';
 import type { Subscription } from '../src/api/types';
-import { getAiInsight } from '../src/api/aiApi';
 import { Colors } from '../src/theme/colors';
 import { Spacing } from '../src/theme/spacing';
 
@@ -132,6 +133,20 @@ export default function DashboardScreen() {
         }}
       >
         <Text style={{ textAlign: 'center', fontWeight: '600' }}>Add Subscription</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={async () => {
+          await deleteToken();
+          router.replace('/login');
+        }}
+        style={{
+          marginTop: Spacing.md,
+          padding: Spacing.md,
+          borderRadius: 12,
+        }}
+      >
+        <Text style={{ textAlign: 'center', color: Colors.textSecondary }}>Logout</Text>
       </Pressable>
     </View>
   );
