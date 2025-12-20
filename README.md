@@ -1,3 +1,29 @@
+# SubMate
+
+SubMate is a mobile-first subscription management app built with Expo (React Native) and a Spring Boot backend. It shows glass-style UI, animated dashboards, per-subscription AI insights, and a chat assistant — ready for local development and App Store submission.
+
+## Features
+- Glass-style UI with smooth animations and charts
+- Add / list / manage subscriptions with backend persistence
+- AI-powered per-subscription insight and chat assistant (POST /ai/chat)
+- JWT-based auth + secure token storage (SecureStore)
+- CI: TypeScript checks, backend tests, Postman E2E via GitHub Actions
+
+## Quick start
+1. Install deps:
+   - `npm install`
+2. Start backend:
+   - `./mvnw -pl subscriptionservice spring-boot:run` (or `mvn -pl subscriptionservice spring-boot:run`)
+3. Start mobile app:
+   - `npx expo start`
+4. Run tests locally:
+   - `npm run ci:test` (TypeScript + backend tests)
+5. Run the Postman collection:
+   - `npm i -g newman`
+   - `newman run postman/SubTrack.postman_collection.json --env-var baseUrl=http://localhost:8080`
+
+## App Store checklist
+See `docs/APP_STORE_CHECKLIST.md` for required assets and steps.
 # Subtrack – Subscription Management App
 
 A full-stack subscription tracking application built with:
