@@ -5,7 +5,7 @@ Short checklist to prepare SubTrack for App Store submission:
 - Assets
   - `assets/icon.png` — 1024×1024 PNG (dark background, centered logo, no rounded corners)
   - `assets/splash.png` — large PNG (e.g., 1242×2688) with dark gradient and centered logo
-  - Replace `SubTrack` branding with `SubMate` and make sure App Store screenshots use the new name.
+  - Replace `SubMate` branding with `SubTrack` and make sure App Store screenshots use the new name.
 - App metadata
   - `app.json` updated with `name: "SubTrack"`, `icon` and `splash` keys, and `ios.bundleIdentifier: "com.harshith.subtrack"`
 - Screenshots to capture (iPhone 14 Pro recommended)

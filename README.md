@@ -1,6 +1,6 @@
-# SubMate
+# SubTrack
 
-SubMate is a mobile-first subscription management app built with Expo (React Native) and a Spring Boot backend. It shows glass-style UI, animated dashboards, per-subscription AI insights, and a chat assistant — ready for local development and App Store submission.
+SubTrack is a mobile-first subscription management app built with Expo (React Native) and a Spring Boot backend. It shows glass-style UI, animated dashboards, per-subscription AI insights, and a chat assistant — ready for local development and App Store submission.
 
 ## Features
 - Glass-style UI with smooth animations and charts

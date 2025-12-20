@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "SubMate",
-    "slug": "submate",
+    "name": "SubTrack",
+    "slug": "subtrack",
     "scheme": "subtrack",
     "version": "1.0.0",
     "orientation": "portrait",

@@ -2,7 +2,7 @@
 
 ## Resume blurb
 
-SubMate — Full Stack Mobile App
+SubTrack — Full Stack Mobile App
 
 - Prepared the app for App Store submission: icons, splash, and build scripts.
 
