@@ -19,6 +19,7 @@ export default function DashboardScreen() {
   const [error, setError] = useState<string | null>(null);
   const [aiInsight, setAiInsight] = useState<string>('');
   const [prediction, setPrediction] = useState<string>('');
+  const [monthly, setMonthly] = useState<number[] | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -39,6 +40,10 @@ export default function DashboardScreen() {
 
     // prediction
     getAiPrediction().then((p) => mounted && setPrediction(p)).catch(() => {});
+    // fetch monthly stats
+    import('../src/api/aiApi').then(({ getMonthlyStats }) => {
+      getMonthlyStats().then((d) => mounted && setMonthly(d)).catch(() => {});
+    });
 
     return () => {
       mounted = false;
@@ -120,8 +125,8 @@ export default function DashboardScreen() {
 
       <LineChart
         data={{
-          labels: ['Jan', 'Feb', 'Mar', 'Apr'],
-          datasets: [{ data: [80, 95, 110, 126] }],
+          labels: ['-3m', '-2m', '-1m', 'Now'],
+          datasets: [{ data: monthly ?? [0, 0, 0, 0] }],
         }}
         width={Dimensions.get('window').width - 40}
         height={180}

@@ -24,6 +24,10 @@ public class SubscriptionRepository {
         return out;
     }
 
+    public double sumForOwner(String owner) {
+        return findByOwner(owner).stream().mapToDouble(Subscription::getPrice).sum();
+    }
+
     public Optional<Subscription> findById(Long id) {
         return Optional.ofNullable(byId.get(id));
     }

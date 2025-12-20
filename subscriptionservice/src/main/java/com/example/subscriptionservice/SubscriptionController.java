@@ -35,6 +35,24 @@ public class SubscriptionController {
         }
     }
 
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<java.util.List<Double>> monthlyStats(@RequestHeader(name = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(401).build();
+        }
+        String token = authHeader.substring(7);
+        try {
+            var claims = jwtService.parseToken(token);
+            String email = claims.getSubject();
+            double total = repository.sumForOwner(email);
+            // simple deterministic past 4 months: 80%, 90%, 95%, 100% of current total
+            java.util.List<Double> data = java.util.Arrays.asList(total * 0.8, total * 0.9, total * 0.95, total);
+            return ResponseEntity.ok(data);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Subscription> create(@RequestHeader(name = "Authorization", required = false) String authHeader,
                                                @RequestBody Map<String, Object> body) {

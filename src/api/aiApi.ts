@@ -17,3 +17,8 @@ export const getAiPrediction = async (): Promise<string> => {
   const res = await apiClient.get('/ai/prediction');
   return res.data?.prediction ?? '';
 };
+
+export const getMonthlyStats = async (): Promise<number[]> => {
+  const res = await apiClient.get('/subscriptions/stats/monthly');
+  return res.data ?? [];
+};

@@ -20,6 +20,14 @@ public class AiController {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private RateLimiterService rateLimiterService;
+
+    // Simple in-memory cache to reduce duplicate AI calls (id -> (value,timestamp))
+    private final java.util.Map<Long, java.util.Map<String, Object>> subscriptionCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.Map<String, java.util.Map<String, Object>> dashboardCache = new java.util.concurrent.ConcurrentHashMap<>();
+    private final long CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
     @GetMapping("/insight")
     public ResponseEntity<Map<String, String>> insight(@RequestHeader(name = "Authorization", required = false) String authHeader) throws Exception {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -30,9 +38,29 @@ public class AiController {
             Claims claims = jwtService.parseToken(token);
             String owner = claims.getSubject();
             var subs = repository.findByOwner(owner);
+            // rate limit per owner
+            if (!rateLimiterService.allow(owner)) {
+                return ResponseEntity.status(429).body(Map.of("error", "Rate limit exceeded"));
+            }
+
+            // check dashboard cache
+            java.util.Map<String, Object> cached = dashboardCache.get(owner);
+            if (cached != null && (Long) cached.getOrDefault("ts", 0L) + CACHE_TTL_MS > System.currentTimeMillis()) {
+                return ResponseEntity.ok(Map.of("insight", (String) cached.getOrDefault("insight", "")));
+            }
+
             String prompt = AiPromptBuilder.buildDashboardInsight(subs);
             String insight = aiService.getInsight(prompt);
-            return ResponseEntity.ok(Map.of("insight", insight));
+
+            // try to parse structured result
+            java.util.Map<String, Object> parsed = tryParseJson(insight);
+            String returnText = insight;
+            if (parsed != null && parsed.containsKey("summary")) {
+                returnText = parsed.get("summary").toString();
+            }
+
+            dashboardCache.put(owner, java.util.Map.of("insight", returnText, "ts", System.currentTimeMillis()));
+            return ResponseEntity.ok(Map.of("insight", returnText));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
         }
@@ -51,9 +79,30 @@ public class AiController {
             if (sub == null || !owner.equals(sub.getOwner())) {
                 return ResponseEntity.status(404).body(Map.of("error", "Not found"));
             }
+            // rate limit per owner
+            if (!rateLimiterService.allow(owner)) {
+                return ResponseEntity.status(429).body(Map.of("error", "Rate limit exceeded"));
+            }
+
+            // check cache
+            java.util.Map<String, Object> cached = subscriptionCache.get(id);
+            if (cached != null && (Long) cached.getOrDefault("ts", 0L) + CACHE_TTL_MS > System.currentTimeMillis()) {
+                return ResponseEntity.ok(Map.of("insight", (String) cached.getOrDefault("insight", "")));
+            }
+
             String prompt = AiPromptBuilder.buildSubscriptionAdvice(sub);
             String insight = aiService.getInsight(prompt);
-            return ResponseEntity.ok(Map.of("insight", insight));
+
+            // attempt to parse structured JSON from assistant
+            java.util.Map<String, Object> parsed = tryParseJson(insight);
+            String returnText = insight;
+            if (parsed != null && parsed.containsKey("recommendation")) {
+                // store a normalized form
+                returnText = parsed.get("recommendation").toString();
+            }
+
+            subscriptionCache.put(id, java.util.Map.of("insight", returnText, "ts", System.currentTimeMillis()));
+            return ResponseEntity.ok(Map.of("insight", returnText));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
         }
@@ -74,6 +123,16 @@ public class AiController {
             return ResponseEntity.ok(Map.of("prediction", result));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Invalid token"));
+        }
+    }
+
+    // attempt to parse assistant response content as JSON to extract structured fields
+    private java.util.Map<String, Object> tryParseJson(String text) {
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            return mapper.readValue(text, java.util.Map.class);
+        } catch (Exception e) {
+            return null;
         }
     }
 }
