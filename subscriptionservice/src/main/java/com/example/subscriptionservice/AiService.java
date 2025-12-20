@@ -36,9 +36,16 @@ public class AiService {
           com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(body);
           com.fasterxml.jackson.databind.JsonNode choices = root.path("choices");
           if (choices.isArray() && choices.size() > 0) {
-            com.fasterxml.jackson.databind.JsonNode message = choices.get(0).path("message");
-            String content = message.path("content").asText(null);
-            if (content != null) return content;
+              com.fasterxml.jackson.databind.JsonNode message = choices.get(0).path("message");
+              String content = message.path("content").asText(null);
+              if (content != null) {
+                // Normalize whitespace and trim
+                content = content.replaceAll("\\s+", " ").trim();
+                // Limit length for UI (safe default)
+                int max = 600;
+                if (content.length() > max) content = content.substring(0, max) + "...";
+                return content;
+              }
           }
         } catch (Exception e) {
           // fallback to raw body on parse errors
