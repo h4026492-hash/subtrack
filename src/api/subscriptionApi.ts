@@ -1,4 +1,18 @@
 import apiClient from "./apiClient";
+import { getToken } from "../auth/token";
+
+export async function fetchSubscriptions() {
+  const token = await getToken();
+
+  const res = await apiClient.get("/subscriptions", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+}
+import apiClient from "./apiClient";
 import type { Subscription } from "./types";
 
 export const getSubscriptions = async (): Promise<Subscription[]> => {
