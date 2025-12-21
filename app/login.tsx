@@ -17,7 +17,24 @@ export default function Login() {
       const token = await login(email, password);
       console.log("LOGIN RESPONSE", token);
       await setToken(token);
-      router.replace("/dashboard");
+      try {
+        // try string form first
+        router.replace("/dashboard");
+        console.log("NAVIGATION: router.replace called with '/dashboard'");
+      } catch (err) {
+        console.log("NAVIGATION ERROR (replace)", err);
+        try {
+          // fallback to object form or push
+          // @ts-ignore - router types are flexible at runtime
+          router.replace({ pathname: "/dashboard" });
+          console.log("NAVIGATION: router.replace called with object");
+        } catch (err2) {
+          console.log("NAVIGATION ERROR (replace object)", err2);
+          // final fallback
+          router.push("/dashboard");
+          console.log("NAVIGATION: router.push called as fallback");
+        }
+      }
     } catch (e) {
       // simple error handling
       alert("Login failed");
