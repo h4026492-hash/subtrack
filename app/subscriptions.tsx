@@ -1,14 +1,7 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  Animated,
-  Pressable,
-} from "react-native";
+import { Text, ScrollView, Animated, Pressable } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { getSubscriptionInsight } from "../src/api/subscriptionApi";
+import { getSubscriptionInsight, getSubscriptions } from "../src/api/subscriptionApi";
 import { useRouter } from "expo-router";
-import { getSubscriptions } from "../src/api/subscriptionApi";
 
 export default function Subscriptions() {
   const router = useRouter();
@@ -16,6 +9,7 @@ export default function Subscriptions() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
 
+  // animate once on mount — fadeAnim & slideAnim are refs and stable
   useEffect(() => {
     getSubscriptions().then(setSubscriptions);
 
@@ -31,7 +25,7 @@ export default function Subscriptions() {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   return (
     <ScrollView
@@ -76,6 +70,7 @@ function SubscriptionCard({ item }: { item: any }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(12)).current;
 
+  // animate in per-card — fadeAnim & slideAnim are refs and stable
   useEffect(() => {
     let mounted = true;
     // animate in
@@ -91,7 +86,7 @@ function SubscriptionCard({ item }: { item: any }) {
     return () => {
       mounted = false;
     };
-  }, [item.id]);
+  }, [item.id, fadeAnim, slideAnim]);
 
   return (
     <Animated.View

@@ -31,7 +31,7 @@ export default function AiScreen() {
         }
       };
       step();
-    } catch (e) {
+    } catch {
       setMessages((m) => m.map((item, idx) => (idx === currentIndex ? `AI: (error)` : item)));
     }
   }

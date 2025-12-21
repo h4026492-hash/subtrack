@@ -1,11 +1,14 @@
 import axios from "axios";
 import { getToken } from "../auth/token";
-import { API_BASE_URL } from "../config";
+
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 5000,
+  baseURL: "http://localhost:8081",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
+
 
 // Attach authorization header if token exists
 apiClient.interceptors.request.use(async (config) => {
@@ -14,7 +17,7 @@ apiClient.interceptors.request.use(async (config) => {
     if (token && config && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-  } catch (err) {
+  } catch {
     // ignore
   }
   return config;

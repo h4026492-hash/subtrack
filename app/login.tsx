@@ -12,25 +12,23 @@ export default function Login() {
   // navigation status debug removed
 
   const handleLogin = async () => {
-    console.log("LOGIN CLICKED");
     setLoading(true);
     try {
       const token = await login(email, password);
-      console.log("LOGIN RESPONSE", token);
       await setToken(token);
       try {
         // prefer replace, fallback to push
         router.replace("/dashboard");
-      } catch (_) {
+      } catch {
         // best-effort fallback
         // @ts-ignore
         try {
           router.replace({ pathname: "/dashboard" });
-        } catch (_) {
+        } catch {
           router.push("/dashboard");
         }
       }
-    } catch (e) {
+    } catch {
       // simple error handling
       alert("Login failed");
     } finally {
