@@ -33,7 +33,8 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "email required"));
         }
         if ("test@test.com".equals(req.getEmail())) {
-            return ResponseEntity.ok(Map.of("token", "jwt-demo-token"));
+            String token = jwtService.generateToken(req.getEmail());
+            return ResponseEntity.ok(Map.of("token", token));
         }
         return ResponseEntity.status(401).body(Map.of("error", "Unauthorized"));
     }

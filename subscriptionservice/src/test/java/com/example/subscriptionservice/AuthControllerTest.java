@@ -28,7 +28,7 @@ public class AuthControllerTest {
     void authLogin_demoToken_forTestEmail() throws Exception {
         mockMvc.perform(post("/auth/login").contentType("application/json").content("{\"email\":\"test@test.com\",\"password\":\"x\"}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-demo-token"));
+                .andExpect(jsonPath("$.token").exists());
     }
 
     @Test
