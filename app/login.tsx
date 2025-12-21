@@ -17,7 +17,7 @@ export default function Login() {
       const token = await login(email, password);
       console.log("LOGIN RESPONSE", token);
       await setToken(token);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (e) {
       // simple error handling
       alert("Login failed");
