@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, TextInput, Pressable, ActivityIndicator, Button } from "react-native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { login } from "../src/api/authApi";
@@ -78,6 +78,12 @@ export default function Login() {
           }}
         />
 
+        {/* Default platform button */}
+        <View style={{ marginBottom: 12 }}>
+          <Button title="Login" onPress={handleLogin} disabled={loading} />
+        </View>
+
+        {/* Styled login button (preserves loading spinner) */}
         <Pressable
           onPress={handleLogin}
           disabled={loading}
@@ -93,7 +99,7 @@ export default function Login() {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>Login</Text>
+            <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>Login (styled)</Text>
           )}
         </Pressable>
       </View>
