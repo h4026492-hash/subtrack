@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "Node16",
     "lib": [
       "ES2020",
       "DOM"
     ],
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
+    "customConditions": ["react-native"],
     "skipLibCheck": true,
     "strict": true,
     "baseUrl": ".",
@@ -24,5 +25,6 @@
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
   ],
+  "exclude": ["e2e", "node_modules"],
   "extends": "expo/tsconfig.base"
 }

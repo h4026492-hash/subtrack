@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import 'react-native-reanimated';
-import { getSubscriptions } from "./src/api/subscriptionApi";
-import type { Subscription } from "./src/api/types";
+import { getSubscriptions } from "./src/api/subscriptionApi.js";
+import type { Subscription } from "./src/api/types.js";
 
 export default function App() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);

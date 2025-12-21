@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useEffect, useState } from "react";
-import { getSubscriptions } from "../src/api/subscriptionApi";
+import { getSubscriptions } from "../src/api/subscriptionApi.js";
 
 export default function Dashboard() {
   const [subscriptions, setSubscriptions] = useState<any[]>([]);

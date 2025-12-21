@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Platform } from "react-native";
 import Constants from "expo-constants";
-import { getToken } from "../auth/token";
+import { getToken } from "../auth/token.js";
 
 // Determine a sensible base URL for development on simulators/devices:
 // - Android emulator (AVD): 10.0.2.2
@@ -23,7 +23,9 @@ const getDevHost = () => {
   if (Platform.OS === "android") return "10.0.2.2";
 
   // If Expo provides the debuggerHost (e.g. '192.168.1.10:19000'), use the IP part
-  const debuggerHost = manifest && manifest.debuggerHost;
+  // Use a safe any-cast for the manifest/debuggerHost since the typed Constants
+  // export may not include these fields in all SDK versions.
+  const debuggerHost = (manifest as any)?.debuggerHost;
   if (typeof debuggerHost === "string") {
     return debuggerHost.split(":")[0];
   }
@@ -35,7 +37,7 @@ const getDevHost = () => {
 const DEFAULT_PORT = 8081;
 const BASE_URL = (() => {
   // If a full URL is provided via env, use it directly
-  const full = process.env.EXPO_PUBLIC_API_URL || (Constants.manifest && Constants.manifest.extra && Constants.manifest.extra.API_URL);
+  const full = process.env.EXPO_PUBLIC_API_URL || ((Constants as any).manifest && (Constants as any).manifest.extra && (Constants as any).manifest.extra.API_URL);
   if (full && (full.startsWith("http://") || full.startsWith("https://"))) return full;
 
   // For development builds use the computed host

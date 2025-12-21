@@ -1,8 +1,8 @@
 import { View, Text, TextInput, Pressable, ActivityIndicator, Button } from "react-native";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { login } from "../src/api/authApi";
-import { setToken } from "../src/auth/token";
+import { login } from "../src/api/authApi.js";
+import { setToken } from "../src/auth/token.js";
 
 export default function Login() {
   // using named `router` import from expo-router

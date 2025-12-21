@@ -1,4 +1,4 @@
-import apiClient from './apiClient';
+import apiClient from './apiClient.js';
 
 export const getAiInsight = async (): Promise<string> => {
   const res = await apiClient.get('/ai/insight');

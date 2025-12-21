@@ -4,7 +4,7 @@
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import { createSubscription } from "../src/api/subscriptionApi";
+import { createSubscription } from "../src/api/subscriptionApi.js";
 
 export default function AddSubscription() {
   const router = useRouter();

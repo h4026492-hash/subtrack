@@ -1,6 +1,6 @@
 import { View, Text, TextInput, ScrollView, Pressable } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
-import { askAi } from "../src/api/aiApi";
+import { askAi } from "../src/api/aiApi.js";
 
 export default function AiScreen() {
   const [input, setInput] = useState("");
