@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "e2e:install": "npx playwright install --with-deps",
+    "test:e2e": "playwright test",
     "ci:test": "npx tsc --noEmit && mvn -pl subscriptionservice test",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",

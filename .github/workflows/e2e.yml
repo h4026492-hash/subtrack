@@ -1,0 +1,39 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main, master, '**' ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start Expo web
+        run: npx expo start --web --port 8082 &
+
+      - name: Wait for web
+        run: |
+          for i in {1..60}; do
+            if curl -sSf "http://localhost:8082" >/dev/null 2>&1; then
+              echo "web up"; break
+            fi
+            sleep 2
+          done
+
+      - name: Run Playwright tests
+        run: npx playwright test --config=e2e/playwright.config.ts --workers=1

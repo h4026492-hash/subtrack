@@ -22,6 +22,16 @@ SubTrack is a mobile-first subscription management app built with Expo (React Na
    - `npm i -g newman`
    - `newman run postman/SubTrack.postman_collection.json --env-var baseUrl=http://localhost:8080`
 
+## End-to-end tests (Playwright)
+
+Run the E2E tests locally against the web build (you must start the expo web server first):
+
+1. Install Playwright browsers: `npm run e2e:install`
+2. Start the Expo web server: `npx expo start --web --port 8082`
+3. In another terminal, run: `npm run test:e2e`
+
+CI: a workflow `.github/workflows/e2e.yml` is included to run E2E tests on push and pull requests.
+
 ## App Store checklist
 See `docs/APP_STORE_CHECKLIST.md` for required assets and steps.
 # Subtrack – Subscription Management App
