@@ -12,7 +12,6 @@ export async function fetchSubscriptions() {
 
   return res.data;
 }
-import apiClient from "./apiClient";
 import type { Subscription } from "./types";
 
 export const getSubscriptions = async (): Promise<Subscription[]> => {
