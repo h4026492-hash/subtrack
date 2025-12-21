@@ -1,11 +1,11 @@
 import { View, Text, TextInput, Pressable, ActivityIndicator, Button } from "react-native";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 import React, { useState } from "react";
 import { login } from "../src/api/authApi";
 import { setToken } from "../src/auth/token";
 
 export default function Login() {
-  const router = useRouter();
+  // using named `router` import from expo-router
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
