@@ -9,7 +9,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [navStatus, setNavStatus] = useState<string | null>(null);
+  // navigation status debug removed
 
   const handleLogin = async () => {
     console.log("LOGIN CLICKED");
@@ -19,32 +19,15 @@ export default function Login() {
       console.log("LOGIN RESPONSE", token);
       await setToken(token);
       try {
-        setNavStatus("attempting router.replace('/dashboard')");
-        // try string form first
+        // prefer replace, fallback to push
         router.replace("/dashboard");
-        console.log("NAVIGATION: router.replace called with '/dashboard'");
-        setNavStatus("router.replace called");
-      } catch (err) {
-        console.log("NAVIGATION ERROR (replace)", err);
-        setNavStatus(`replace error: ${String(err)}`);
+      } catch (_) {
+        // best-effort fallback
+        // @ts-ignore
         try {
-          // fallback to object form
-          // @ts-ignore - router types are flexible at runtime
           router.replace({ pathname: "/dashboard" });
-          console.log("NAVIGATION: router.replace called with object");
-          setNavStatus("router.replace(object) called");
-        } catch (err2) {
-          console.log("NAVIGATION ERROR (replace object)", err2);
-          setNavStatus(`replace(object) error: ${String(err2)}`);
-          // final fallback
-          try {
-            router.push("/dashboard");
-            console.log("NAVIGATION: router.push called as fallback");
-            setNavStatus("router.push called (fallback)");
-          } catch (err3) {
-            console.log("NAVIGATION ERROR (push fallback)", err3);
-            setNavStatus(`push fallback error: ${String(err3)}`);
-          }
+        } catch (_) {
+          router.push("/dashboard");
         }
       }
     } catch (e) {
@@ -131,9 +114,7 @@ export default function Login() {
             <Text style={{ color: "#fff", textAlign: "center", fontSize: 16 }}>Login (styled)</Text>
           )}
         </Pressable>
-        {navStatus ? (
-          <Text style={{ color: "#FFCC00", marginTop: 12 }}>Debug: {navStatus}</Text>
-        ) : null}
+        {/* debug UI removed */}
       </View>
     </View>
   );
