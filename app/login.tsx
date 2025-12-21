@@ -11,11 +11,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    console.log("LOGIN CLICKED");
     setLoading(true);
     try {
       const token = await login(email, password);
+      console.log("LOGIN RESPONSE", token);
       await setToken(token);
-      router.replace("/dashboard");
+      router.push("/dashboard");
     } catch (e) {
       // simple error handling
       alert("Login failed");
