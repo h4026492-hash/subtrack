@@ -15,6 +15,10 @@ export default function Login() {
     setLoading(true);
     try {
       const token = await login(email, password);
+      if (!token || typeof token !== "string") {
+        alert("Login failed: invalid token received");
+        return;
+      }
       await setToken(token);
       try {
         // prefer replace, fallback to push
