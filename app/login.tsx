@@ -12,14 +12,14 @@ export default function Login() {
   const handleLogin = async () => {
     try {
       setLoading(true);
+      console.log("LOGIN CLICKED");
       const res = await login(email, password);
-      // backend may return a token string or an object { token }
-      const token = typeof res === 'string' ? res : res?.token ?? null;
-      if (!token) throw new Error('No token returned');
-      await setToken(token);
+      console.log("LOGIN RESPONSE", res);
+
+      await setToken(res.token);
       router.replace("/dashboard");
     } catch (e) {
-      alert("Login failed");
+      console.error("LOGIN FAILED", e);
     } finally {
       setLoading(false);
     }

@@ -1,16 +1,36 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [dashboard, setDashboard] = useState<any>(null);
 
   useEffect(() => {
-    getDashboard().then(setData);
+    const load = async () => {
+      try {
+        const data = await getDashboard();
+        setDashboard(data);
+      } catch (e) {
+        console.error("DASHBOARD ERROR", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
-  if (!data) {
-    return <Text style={{ padding: 20 }}>Loading…</Text>;
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!dashboard) {
+    return <Text style={{ padding: 20 }}>No data</Text>;
   }
 
   return (
@@ -28,10 +48,10 @@ export default function Dashboard() {
         }}
       >
         <Text style={{ color: "#94a3b8" }}>Total Monthly Spend</Text>
-        <Text style={{ color: "white", fontSize: 28 }}>${data.totalMonthly}</Text>
+        <Text style={{ color: "white", fontSize: 28 }}>${dashboard.totalMonthly}</Text>
       </View>
 
-      {data.subscriptions.map((s: any) => (
+      {dashboard.subscriptions.map((s: any) => (
         <View
           key={s.id}
           style={{
