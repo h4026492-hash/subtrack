@@ -58,18 +58,55 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#0B1220' },
-  card: { backgroundColor: 'rgba(255,255,255,0.03)', padding: 20, borderRadius: 16 },
-  title: { color: '#fff', fontSize: 24, fontWeight: '700', marginBottom: 8 },
-  subtitle: { color: '#9CA3AF', marginBottom: 16 },
-  input: {
-    backgroundColor: 'rgba(255,255,255,0.08)',
-    color: '#fff',
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 12,
+  container: {
+    flex: 1,
+    backgroundColor: "#0f172a",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
   },
-  button: { backgroundColor: '#4F8EF7', padding: 14, borderRadius: 12, marginTop: 8 },
-  buttonText: { color: '#fff', textAlign: 'center', fontWeight: '600' },
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    // web-only style; React Native's types don't include backdropFilter
+    // @ts-ignore
+    backdropFilter: "blur(10px)",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#cbd5f5",
+    marginBottom: 24,
+  },
+  input: {
+    backgroundColor: "rgba(255,255,255,0.12)",
+    borderRadius: 12,
+    padding: 14,
+    color: "#fff",
+    marginBottom: 14,
+  },
+  button: {
+    backgroundColor: "#6366f1",
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
 });
  
