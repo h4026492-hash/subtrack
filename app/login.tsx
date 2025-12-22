@@ -28,7 +28,7 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.title}>SubTrack</Text>
         <Text style={styles.subtitle}>Sign in to continue</Text>
 
         <TextInput
