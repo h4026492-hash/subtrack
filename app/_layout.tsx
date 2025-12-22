@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
-import { Slot, router } from "expo-router";
-import { getToken } from "../src/auth/token";
+import { useEffect } from "react";
+import { Slot, router, useRootNavigationState } from "expo-router";
 import { View, ActivityIndicator } from "react-native";
+import { getToken } from "../src/auth/token";
 
 export default function App() {
-  const [checking, setChecking] = useState(true);
+  const navigationState = useRootNavigationState();
 
   useEffect(() => {
+    if (!navigationState?.key) return;
+
     (async () => {
       const token = await getToken();
       if (token) {
@@ -14,11 +16,10 @@ export default function App() {
       } else {
         router.replace("/login");
       }
-      setChecking(false);
     })();
-  }, []);
+  }, [navigationState]);
 
-  if (checking) {
+  if (!navigationState?.key) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
