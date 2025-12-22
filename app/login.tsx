@@ -1,42 +1,20 @@
-import { View, Text, TextInput, Pressable, ActivityIndicator, Button } from "react-native";
-import { router } from "expo-router";
-import React, { useState } from "react";
-import { login } from "../src/api/authApi.js";
-import { setToken } from "../src/auth/token.js";
+import { View, Text, Button } from "react-native";
+import { useRouter } from "expo-router";
+import React from "react";
+import { login } from "../src/api/authApi";
 
 export default function Login() {
   // using named `router` import from expo-router
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  // keep file minimal and safe for testing
   // navigation status debug removed
 
   const handleLogin = async () => {
-    setLoading(true);
     try {
-      const token = await login(email, password);
-      if (!token || typeof token !== "string") {
-        alert("Login failed: invalid token received");
-        return;
-      }
-      await setToken(token);
-      try {
-        // prefer replace, fallback to push
-        router.replace("/dashboard");
-      } catch {
-        // best-effort fallback
-        // @ts-ignore
-        try {
-          router.replace({ pathname: "/dashboard" });
-        } catch {
-          router.push("/dashboard");
-        }
-      }
-    } catch {
-      // simple error handling
-      alert("Login failed");
-    } finally {
-      setLoading(false);
+      const res = await login("test@test.com", "test");
+      console.log("LOGIN RESPONSE", res);
+      router.replace("/dashboard");
+    } catch (err) {
+      console.error("LOGIN FAILED", err);
     }
   };
 
@@ -94,7 +72,7 @@ export default function Login() {
 
         {/* Default platform button */}
         <View style={{ marginBottom: 12 }}>
-          <Button title="Login" onPress={handleLogin} disabled={loading} />
+            <Button title="Login" onPress={handleLogin} />
         </View>
 
         {/* Styled login button (preserves loading spinner) */}
