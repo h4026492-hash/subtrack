@@ -24,8 +24,18 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#020617",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <ActivityIndicator size="large" color="#ffffff" />
+        <Text style={{ color: "#94a3b8", marginTop: 12 }}>
+          Loading your subscriptions…
+        </Text>
       </View>
     );
   }
@@ -68,6 +78,25 @@ export default function Dashboard() {
         </Text>
       </GlassCard>
 
+      <GlassCard>
+        <Text style={{ color: "#cbd5f5", fontSize: 14 }}>AI Insight</Text>
+
+        <Text
+          style={{
+            color: "white",
+            fontSize: 18,
+            fontWeight: "600",
+            marginTop: 8,
+          }}
+        >
+          You could save $10/month
+        </Text>
+
+        <Text style={{ color: "#94a3b8", marginTop: 6 }}>
+          Spotify is rarely used. Consider cancelling or switching plans.
+        </Text>
+      </GlassCard>
+
       <Text
         style={{
           color: "white",
@@ -79,12 +108,21 @@ export default function Dashboard() {
         Your Subscriptions
       </Text>
 
-      {dashboard.subscriptions.map((s: any) => (
-        <GlassCard key={s.id}>
-          <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>{s.plan}</Text>
-          <Text style={{ color: "#94a3b8", marginTop: 4 }}>${s.price} / month</Text>
-        </GlassCard>
-      ))}
+      {dashboard.subscriptions.map((s: any) => {
+        const isExpensive = s.price === dashboard.maxPrice;
+        return (
+          <GlassCard key={s.id}>
+            <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>{s.plan}</Text>
+            <Text style={{ color: "#94a3b8", marginTop: 4 }}>${s.price} / month</Text>
+
+            {isExpensive && (
+              <Text style={{ color: "#fbbf24", marginTop: 6, fontSize: 12 }}>
+                Highest monthly cost
+              </Text>
+            )}
+          </GlassCard>
+        );
+      })}
     </ScrollView>
   );
 }
