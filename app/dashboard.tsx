@@ -1,4 +1,5 @@
 import { View, Text, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
 import GlassCard from "../components/GlassCard";
@@ -59,24 +60,28 @@ export default function Dashboard() {
   }
 
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: "#020617" }}
-      contentContainerStyle={{ padding: 20 }}
-    >
-      <Text
-        style={{
-          color: "white",
-          fontSize: 32,
-          fontWeight: "700",
-          marginBottom: 4,
-        }}
-      >
-        Dashboard
-      </Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#020617" }}>
+      <ScrollView contentContainerStyle={{ padding: 16 }} showsVerticalScrollIndicator={false}>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 28,
+            fontWeight: "700",
+            marginTop: 12,
+          }}
+        >
+          Dashboard
+        </Text>
 
-      <Text style={{ color: "#94a3b8", fontSize: 16 }}>
-        Track and optimize your subscriptions
-      </Text>
+        <Text
+          style={{
+            color: "#94a3b8",
+            marginTop: 6,
+            marginBottom: 20,
+          }}
+        >
+          Track and optimize your subscriptions
+        </Text>
 
       <GlassCard>
         <Text style={{ color: "#cbd5f5", fontSize: 14 }}>Total Monthly Spend</Text>
@@ -145,7 +150,8 @@ export default function Dashboard() {
           </Pressable>
         );
       })}
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
