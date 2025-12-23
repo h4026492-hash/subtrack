@@ -1,5 +1,5 @@
-import apiClient from "./apiClient.js";
-import { getToken } from "../auth/token.js";
+import apiClient from "./apiClient";
+import { getToken } from "../auth/token";
 
 export async function fetchSubscriptions() {
   const token = await getToken();
@@ -12,7 +12,7 @@ export async function fetchSubscriptions() {
 
   return res.data;
 }
-import type { Subscription } from "./types.js";
+import type { Subscription } from "./types";
 
 export const getSubscriptions = async (): Promise<Subscription[]> => {
   const res = await apiClient.get<Subscription[]>('/subscriptions');
@@ -32,4 +32,9 @@ export const getSubscriptionInsight = async (id: number) => {
   // API returns { insight }
   return res.data?.insight;
 };
+
+export async function getSubscriptionById(id: string) {
+  const res = await apiClient.get(`/subscriptions/${id}`);
+  return res.data;
+}
 

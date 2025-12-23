@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
 import GlassCard from "../components/GlassCard";
+import { router } from "expo-router";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -132,7 +133,7 @@ export default function Dashboard() {
         return (
           <Pressable
             key={s.id}
-            onPress={() => {}}
+            onPress={() => router.push(`/subscription/${s.id}`)}
             style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
           >
             <GlassCard>
