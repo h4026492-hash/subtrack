@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Pressable } from "react-native";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
 import GlassCard from "../components/GlassCard";
@@ -40,8 +40,22 @@ export default function Dashboard() {
     );
   }
 
-  if (!dashboard) {
-    return <Text style={{ padding: 20 }}>No data</Text>;
+  if (!dashboard || dashboard.subscriptions.length === 0) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#020617",
+        }}
+      >
+        <Text style={{ color: "white", fontSize: 20 }}>No subscriptions yet</Text>
+        <Text style={{ color: "#94a3b8", marginTop: 8 }}>
+          Add your first subscription to get started
+        </Text>
+      </View>
+    );
   }
 
   return (
@@ -111,16 +125,24 @@ export default function Dashboard() {
       {dashboard.subscriptions.map((s: any) => {
         const isExpensive = s.price === dashboard.maxPrice;
         return (
-          <GlassCard key={s.id}>
-            <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>{s.plan}</Text>
-            <Text style={{ color: "#94a3b8", marginTop: 4 }}>${s.price} / month</Text>
+          <Pressable
+            key={s.id}
+            onPress={() => {}}
+            style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
+          >
+            <GlassCard>
+              <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>{s.plan}</Text>
+              <Text style={{ color: "#94a3b8", marginTop: 4 }}>${s.price} / month</Text>
 
-            {isExpensive && (
-              <Text style={{ color: "#fbbf24", marginTop: 6, fontSize: 12 }}>
-                Highest monthly cost
-              </Text>
-            )}
-          </GlassCard>
+              <Text style={{ color: "#60a5fa", fontSize: 12, marginTop: 8 }}>View details</Text>
+
+              {isExpensive && (
+                <Text style={{ color: "#fbbf24", marginTop: 6, fontSize: 12 }}>
+                  Highest monthly cost
+                </Text>
+              )}
+            </GlassCard>
+          </Pressable>
         );
       })}
     </ScrollView>
