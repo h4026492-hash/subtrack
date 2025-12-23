@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
+import GlassCard from "../components/GlassCard";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -34,36 +35,55 @@ export default function Dashboard() {
   }
 
   return (
-    <ScrollView style={{ padding: 16, backgroundColor: "#0f172a" }}>
-      <Text style={{ color: "white", fontSize: 24, fontWeight: "600" }}>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: "#020617" }}
+      contentContainerStyle={{ padding: 20 }}
+    >
+      <Text
+        style={{
+          color: "white",
+          fontSize: 32,
+          fontWeight: "700",
+          marginBottom: 4,
+        }}
+      >
+        Dashboard
+      </Text>
+
+      <Text style={{ color: "#94a3b8", fontSize: 16 }}>
+        Track and optimize your subscriptions
+      </Text>
+
+      <GlassCard>
+        <Text style={{ color: "#cbd5f5", fontSize: 14 }}>Total Monthly Spend</Text>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 36,
+            fontWeight: "700",
+            marginTop: 8,
+          }}
+        >
+          ${dashboard.totalMonthly}
+        </Text>
+      </GlassCard>
+
+      <Text
+        style={{
+          color: "white",
+          fontSize: 22,
+          fontWeight: "600",
+          marginTop: 32,
+        }}
+      >
         Your Subscriptions
       </Text>
 
-      <View
-        style={{
-          marginTop: 16,
-          padding: 16,
-          borderRadius: 16,
-          backgroundColor: "rgba(255,255,255,0.08)",
-        }}
-      >
-        <Text style={{ color: "#94a3b8" }}>Total Monthly Spend</Text>
-        <Text style={{ color: "white", fontSize: 28 }}>${dashboard.totalMonthly}</Text>
-      </View>
-
       {dashboard.subscriptions.map((s: any) => (
-        <View
-          key={s.id}
-          style={{
-            marginTop: 12,
-            padding: 16,
-            borderRadius: 16,
-            backgroundColor: "rgba(255,255,255,0.06)",
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 18 }}>{s.plan}</Text>
-          <Text style={{ color: "#94a3b8" }}>${s.price}/month</Text>
-        </View>
+        <GlassCard key={s.id}>
+          <Text style={{ color: "white", fontSize: 18, fontWeight: "600" }}>{s.plan}</Text>
+          <Text style={{ color: "#94a3b8", marginTop: 4 }}>${s.price} / month</Text>
+        </GlassCard>
       ))}
     </ScrollView>
   );
