@@ -133,7 +133,10 @@ export default function Dashboard() {
         return (
           <Pressable
             key={s.id}
-            onPress={() => router.push(`/subscription/${s.id}`)}
+            onPress={() => {
+              console.log("SUBSCRIPTION ID", s.id);
+              router.push(`/subscription/${s.id}`);
+            }}
             style={({ pressed }) => ({ opacity: pressed ? 0.85 : 1 })}
           >
             <GlassCard>
