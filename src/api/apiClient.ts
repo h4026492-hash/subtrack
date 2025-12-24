@@ -1,13 +1,22 @@
 import axios from "axios";
-import { getToken } from "../auth/token";
+import { getSessionToken } from "../auth/session";
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: "http://localhost:8081",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-export { api };
+api.interceptors.request.use((config) => {
+  const token = getSessionToken();
+  if (token) {
+    // attach token synchronously from in-memory session
+    // @ts-ignore - augmenting headers
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 export default api;
 

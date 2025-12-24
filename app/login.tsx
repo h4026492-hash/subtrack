@@ -2,6 +2,7 @@ import { View, Text, TextInput, Pressable, Alert } from "react-native";
 import { router } from "expo-router";
 import { useState } from "react";
 import { login } from "../src/api/authApi";
+import { setSessionToken } from "../src/auth/session";
 
 export default function Login() {
   const [email, setEmail] = useState("test@test.com");
@@ -11,6 +12,8 @@ export default function Login() {
     try {
       const token = await login(email, password);
       console.log("TOKEN RECEIVED", token);
+
+      setSessionToken(token); // store in-memory for API requests
 
       router.replace("/dashboard");
     } catch (e: any) {
