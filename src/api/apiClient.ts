@@ -2,7 +2,7 @@ import axios from "axios";
 import { getToken } from "../auth/token";
 
 const api = axios.create({
-  baseURL: "http://localhost:8081",
+  baseURL: "http://192.168.1.54:8081",
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,7 +11,6 @@ const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const token = await getToken();
   if (token) {
-    // @ts-ignore
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
