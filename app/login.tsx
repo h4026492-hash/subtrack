@@ -14,7 +14,7 @@ export default function Login() {
       setLoading(true);
       console.log("LOGIN CLICKED");
       const res = await login(email, password);
-      console.log("LOGIN RESPONSE", res);
+      console.log("LOGIN RESPONSE", res.token);
 
       await setToken(res.token);
       router.replace("/dashboard");

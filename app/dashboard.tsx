@@ -1,9 +1,10 @@
 import { View, Text, ScrollView, ActivityIndicator, Pressable } from "react-native";
+import { router } from "expo-router";
+import { getToken } from "../src/auth/token";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
 import { getDashboard } from "../src/api/dashboardApi";
 import GlassCard from "../components/GlassCard";
-import { router } from "expo-router";
 
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
@@ -13,6 +14,12 @@ export default function Dashboard() {
   useEffect(() => {
     const load = async () => {
       try {
+        const token = await getToken();
+        if (!token) {
+          console.log("NO TOKEN, REDIRECTING");
+          router.replace("/login");
+          return;
+        }
         const data = await getDashboard();
         setDashboard(data);
       } catch (e) {
