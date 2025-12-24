@@ -7,6 +7,7 @@ export default function SubscriptionDetail() {
   const { id } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
   const [subscription, setSubscription] = useState<any>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -15,6 +16,7 @@ export default function SubscriptionDetail() {
         setSubscription(data);
       } catch (e) {
         console.error("SUBSCRIPTION DETAIL ERROR", e);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -29,6 +31,10 @@ export default function SubscriptionDetail() {
         <ActivityIndicator size="large" />
       </View>
     );
+  }
+
+  if (error) {
+    return <Text style={{ padding: 20 }}>Failed to load subscription</Text>;
   }
 
   if (!subscription) {

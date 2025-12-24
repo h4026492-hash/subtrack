@@ -8,6 +8,7 @@ import { router } from "expo-router";
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] = useState<any>(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -16,6 +17,7 @@ export default function Dashboard() {
         setDashboard(data);
       } catch (e) {
         console.error("DASHBOARD ERROR", e);
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -40,6 +42,10 @@ export default function Dashboard() {
         </Text>
       </View>
     );
+  }
+
+  if (error) {
+    return <Text style={{ padding: 20 }}>Failed to load dashboard</Text>;
   }
 
   if (!dashboard || dashboard.subscriptions.length === 0) {

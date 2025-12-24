@@ -1,25 +1,18 @@
 import { useEffect } from "react";
-import { Slot, router, useRootNavigationState } from "expo-router";
+import { Stack, router } from "expo-router";
 import { View, ActivityIndicator } from "react-native";
-import { getToken } from "../src/auth/token";
+import { useAuth } from "../src/auth/useAuth";
 
-export default function App() {
-  const navigationState = useRootNavigationState();
+export default function RootLayout() {
+  const { loading, authenticated } = useAuth();
 
   useEffect(() => {
-    if (!navigationState?.key) return;
+    if (!loading) {
+      router.replace(authenticated ? "/dashboard" : "/login");
+    }
+  }, [loading, authenticated]);
 
-    (async () => {
-      const token = await getToken();
-      if (token) {
-        router.replace("/dashboard");
-      } else {
-        router.replace("/login");
-      }
-    })();
-  }, [navigationState]);
-
-  if (!navigationState?.key) {
+  if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
@@ -27,5 +20,26 @@ export default function App() {
     );
   }
 
-  return <Slot />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="dashboard"
+        options={{
+          headerShown: true,
+          headerStyle: { backgroundColor: "#0f172a" },
+          headerTintColor: "white",
+          headerTitleStyle: { fontWeight: "600" },
+        }}
+      />
+      <Stack.Screen
+        name="subscription/[id]"
+        options={{
+          headerShown: true,
+          headerStyle: { backgroundColor: "#0f172a" },
+          headerTintColor: "white",
+          headerTitleStyle: { fontWeight: "600" },
+        }}
+      />
+    </Stack>
+  );
 }
