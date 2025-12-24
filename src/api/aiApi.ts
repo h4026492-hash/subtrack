@@ -1,4 +1,4 @@
-import apiClient from './apiClient.js';
+import apiClient from './apiClient';
 
 export const getAiInsight = async (): Promise<string> => {
   const res = await apiClient.get('/ai/insight');
@@ -30,4 +30,16 @@ export const askAi = async (prompt: string): Promise<string> => {
   if (!data) return '';
   if (typeof data === 'string') return data;
   return data?.reply ?? data?.answer ?? '';
+};
+
+export interface AiParseResult {
+  provider?: string;
+  plan?: string;
+  price?: number;
+  billingCycle?: 'MONTHLY' | 'YEARLY';
+}
+
+export const parseAiText = async (text: string): Promise<AiParseResult> => {
+  const res = await apiClient.post('/ai/parse', { text });
+  return res.data ?? {};
 };

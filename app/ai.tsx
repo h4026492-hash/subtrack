@@ -1,51 +1,74 @@
-import { View, Text, ScrollView } from "react-native";
-import { useEffect, useState } from "react";
-import { getDashboard } from "../src/api/dashboardApi";
+import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
+import { useState } from "react";
+import { useRouter } from "expo-router";
+import { parseAiText } from "../src/api/aiApi";
 
-export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+export default function AiParseScreen() {
+  const router = useRouter();
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    getDashboard().then(setData);
-  }, []);
+  const analyze = async () => {
+    if (!text.trim()) return;
+    setLoading(true);
+    setError(null);
 
-  if (!data) {
-    return <Text style={{ padding: 20 }}>Loading…</Text>;
-  }
+    try {
+      const res = await parseAiText(text.trim());
+
+      router.push({
+        pathname: "/add",
+        params: {
+          provider: res.provider ?? undefined,
+          plan: res.plan ?? undefined,
+          price: res.price ?? undefined,
+          billingCycle: res.billingCycle ?? undefined,
+        },
+      });
+    } catch (e) {
+      console.error("AI PARSE ERROR", e);
+      setError("Failed to analyze text");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <ScrollView style={{ padding: 16, backgroundColor: "#0f172a" }}>
-      <Text style={{ color: "white", fontSize: 24, fontWeight: "600" }}>
-        Your Subscriptions
-      </Text>
+    <View style={{ flex: 1, padding: 20, backgroundColor: "#0f172a" }}>
+      <Text style={{ color: "white", fontSize: 22, marginBottom: 12 }}>AI Assist</Text>
 
-      <View
+      <TextInput
+        placeholder="e.g., I pay 15 dollars every month for Netflix premium"
+        placeholderTextColor="#94a3b8"
+        value={text}
+        onChangeText={setText}
         style={{
-          marginTop: 16,
-          padding: 16,
-          borderRadius: 16,
-          backgroundColor: "rgba(255,255,255,0.08)",
+          backgroundColor: "rgba(255,255,255,0.04)",
+          color: "white",
+          padding: 14,
+          borderRadius: 12,
+          minHeight: 80,
+          marginBottom: 12,
         }}
-      >
-        <Text style={{ color: "#94a3b8" }}>Total Monthly Spend</Text>
-        <Text style={{ color: "white", fontSize: 28 }}>${data.totalMonthly}</Text>
-      </View>
+        multiline
+      />
 
-      {data.subscriptions.map((s: any) => (
-        <View
-          key={s.id}
-          style={{
-            marginTop: 12,
-            padding: 16,
-            borderRadius: 16,
-            backgroundColor: "rgba(255,255,255,0.06)",
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 18 }}>{s.plan}</Text>
-          <Text style={{ color: "#94a3b8" }}>${s.price}/month</Text>
-        </View>
-      ))}
-    </ScrollView>
+      {error && <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text>}
+
+      <Pressable
+        onPress={analyze}
+        disabled={loading}
+        style={{ backgroundColor: "#2563eb", padding: 14, borderRadius: 12, alignItems: "center" }}
+      >
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={{ color: "white" }}>Analyze</Text>
+        )}
+      </Pressable>
+    </View>
   );
 }
+ 
 

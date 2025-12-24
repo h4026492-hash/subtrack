@@ -128,6 +128,12 @@ export default function Dashboard() {
         <Text style={{ color: "#94a3b8", marginTop: 6 }}>
           Spotify is rarely used. Consider cancelling or switching plans.
         </Text>
+        <Pressable
+          onPress={() => router.push('/ai')}
+          style={{ marginTop: 12, paddingVertical: 10, paddingHorizontal: 12, backgroundColor: 'rgba(37,99,235,0.12)', borderRadius: 10, alignSelf: 'flex-start' }}
+        >
+          <Text style={{ color: '#60a5fa' }}>Use AI to prefill Add form</Text>
+        </Pressable>
       </GlassCard>
 
       <Text
