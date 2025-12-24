@@ -1,72 +1,61 @@
 import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
 import { useState } from "react";
-import { useRouter } from "expo-router";
-import { parseAiText } from "../src/api/aiApi";
+import { askAi } from "../src/api/aiApi";
 
-export default function AiParseScreen() {
-  const router = useRouter();
+export default function AiScreen() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const analyze = async () => {
+  const handleParse = async () => {
     if (!text.trim()) return;
     setLoading(true);
+    setResult(null);
     setError(null);
 
     try {
-      const res = await parseAiText(text.trim());
-
-      router.push({
-        pathname: "/add",
-        params: {
-          provider: res.provider ?? undefined,
-          plan: res.plan ?? undefined,
-          price: res.price ?? undefined,
-          billingCycle: res.billingCycle ?? undefined,
-        },
-      });
+      const res = await askAi(text.trim());
+      setResult(res);
     } catch (e) {
-      console.error("AI PARSE ERROR", e);
-      setError("Failed to analyze text");
+      console.error("AI ERROR", e);
+      setError("Failed to parse text");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <View style={{ flex: 1, padding: 20, backgroundColor: "#0f172a" }}>
-      <Text style={{ color: "white", fontSize: 22, marginBottom: 12 }}>AI Assist</Text>
+    <View style={{ flex: 1, padding: 16, backgroundColor: "#0f172a" }}>
+      <Text style={{ color: "white", fontSize: 22, fontWeight: "600" }}>AI Subscription Parser</Text>
 
       <TextInput
-        placeholder="e.g., I pay 15 dollars every month for Netflix premium"
-        placeholderTextColor="#94a3b8"
         value={text}
         onChangeText={setText}
-        style={{
-          backgroundColor: "rgba(255,255,255,0.04)",
-          color: "white",
-          padding: 14,
-          borderRadius: 12,
-          minHeight: 80,
-          marginBottom: 12,
-        }}
+        placeholder="Example: I pay 15 dollars every month for Netflix premium"
+        placeholderTextColor="#64748b"
+        style={{ marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: "#020617", color: "white" }}
         multiline
       />
 
-      {error && <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text>}
-
       <Pressable
-        onPress={analyze}
-        disabled={loading}
-        style={{ backgroundColor: "#2563eb", padding: 14, borderRadius: 12, alignItems: "center" }}
+        onPress={handleParse}
+        style={{ marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: "#2563eb", alignItems: "center" }}
       >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={{ color: "white" }}>Analyze</Text>
-        )}
+        <Text style={{ color: "white", fontWeight: "600" }}>Parse with AI</Text>
       </Pressable>
+
+      {loading && <ActivityIndicator style={{ marginTop: 20 }} color="white" />}
+
+      {error && <Text style={{ color: "#f87171", marginTop: 12 }}>{error}</Text>}
+
+      {result && (
+        <View style={{ marginTop: 24, padding: 16, borderRadius: 16, backgroundColor: "rgba(255,255,255,0.08)" }}>
+          <Text style={{ color: "white", fontSize: 18 }}>{result.provider}</Text>
+          <Text style={{ color: "#94a3b8" }}>Plan: {result.plan}</Text>
+          <Text style={{ color: "#94a3b8" }}>${result.price} / {result.billingCycle}</Text>
+        </View>
+      )}
     </View>
   );
 }

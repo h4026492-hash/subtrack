@@ -23,13 +23,9 @@ export const getMonthlyStats = async (): Promise<number[]> => {
   return res.data ?? [];
 };
 
-export const askAi = async (prompt: string): Promise<string> => {
-  const res = await apiClient.post('/ai/chat', { prompt });
-  // Support both { reply } and plain text
-  const data = res.data;
-  if (!data) return '';
-  if (typeof data === 'string') return data;
-  return data?.reply ?? data?.answer ?? '';
+export const askAi = async (text: string): Promise<AiParseResult> => {
+  const res = await apiClient.post('/ai/parse', { text });
+  return res.data ?? {};
 };
 
 export interface AiParseResult {
