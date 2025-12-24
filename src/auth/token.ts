@@ -6,7 +6,7 @@ export async function setToken(token: string) {
   await SecureStore.setItemAsync(TOKEN_KEY, String(token));
 }
 
-export async function getToken(): Promise<string | null> {
+export async function getToken() {
   return await SecureStore.getItemAsync(TOKEN_KEY);
 }
 

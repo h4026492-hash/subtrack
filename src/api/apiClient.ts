@@ -10,9 +10,12 @@ const api = axios.create({
 
 api.interceptors.request.use(async (config) => {
   const token = await getToken();
-  if (token) {
+
+  // Do not attach token for auth endpoints (login/register)
+  if (token && !config.url?.startsWith("/auth")) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   return config;
 });
 

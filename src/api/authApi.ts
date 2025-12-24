@@ -1,12 +1,11 @@
-import apiClient from "./apiClient";
+import api from "./apiClient";
 
 export async function login(email: string, password: string) {
-  const res = await apiClient.post("/auth/login", { email, password });
+  const res = await api.post("/auth/login", {
+    email,
+    password,
+  });
 
-  // normalize response: always return { token: string }
-  if (typeof res.data === "string") {
-    return { token: res.data };
-  }
-
-  return res.data;
+  // backend returns { token: "..." }
+  return res.data.token;
 }
