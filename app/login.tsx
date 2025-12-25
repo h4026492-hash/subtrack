@@ -1,92 +1,97 @@
-import { View, Text, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useState } from "react";
+import RotatingCube from "../components/RotatingCube";
 import { login } from "../src/api/authApi";
-import { setSessionToken } from "../src/auth/session";
+import { setToken } from "../src/auth/token";
+import { router } from "expo-router";
 
 export default function Login() {
-  const [email, setEmail] = useState("test@test.com");
-  const [password, setPassword] = useState("test");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
-      setError(null);
       const token = await login(email, password);
-      console.log("TOKEN RECEIVED", token);
-
-      setSessionToken(token); // store in-memory for API requests
-      // Persist token for future sessions
-      // setToken is async; do not await to avoid blocking UX here (we rely on session for immediate requests)
-      // but fire-and-forget persistence is fine
-      import("../src/auth/token").then((mod) => mod.setToken(token)).catch(() => {});
-
+      await setToken(String(token));
       router.replace("/dashboard");
-    } catch (e: any) {
-      console.error("LOGIN FAILED", e?.response?.status, e?.message);
+    } catch (e) {
       setError("Invalid email or password");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        padding: 24,
-        backgroundColor: "#020617",
-      }}
-    >
-      <Text style={{ color: "white", fontSize: 28, marginBottom: 20 }}>
-        Login
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Subtrack</Text>
+
+      <RotatingCube />
 
       <TextInput
-        value={email}
-        onChangeText={setEmail}
         placeholder="Email"
         placeholderTextColor="#94a3b8"
-        style={{
-          backgroundColor: "#0f172a",
-          color: "white",
-          padding: 14,
-          borderRadius: 10,
-          marginBottom: 12,
-        }}
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
       />
 
       <TextInput
-        value={password}
-        onChangeText={setPassword}
         placeholder="Password"
         placeholderTextColor="#94a3b8"
+        style={styles.input}
+        value={password}
+        onChangeText={setPassword}
         secureTextEntry
-        style={{
-          backgroundColor: "#0f172a",
-          color: "white",
-          padding: 14,
-          borderRadius: 10,
-          marginBottom: 20,
-        }}
       />
 
-      {error ? <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text> : null}
+      {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <Pressable
-        onPress={handleLogin}
-        disabled={loading}
-        style={{ padding: 16, backgroundColor: loading ? "#94a3b8" : "#2563eb", borderRadius: 10 }}
-      >
-        {loading ? (
-          <ActivityIndicator color="white" />
-        ) : (
-          <Text style={{ color: "white", textAlign: "center", fontSize: 16 }}>Login</Text>
-        )}
+      <Pressable style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Continue</Text>
       </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#020617",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
+  title: {
+    color: "white",
+    fontSize: 36,
+    fontWeight: "700",
+    marginBottom: 24,
+  },
+  input: {
+    width: "100%",
+    backgroundColor: "#020617",
+    borderWidth: 1,
+    borderColor: "#334155",
+    borderRadius: 14,
+    padding: 14,
+    color: "white",
+    marginBottom: 12,
+  },
+  button: {
+    backgroundColor: "#6366f1",
+    paddingVertical: 14,
+    width: "100%",
+    borderRadius: 14,
+    alignItems: "center",
+    marginTop: 12,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  error: {
+    color: "#f87171",
+    marginBottom: 8,
+  },
+});
