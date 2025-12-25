@@ -1,9 +1,9 @@
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
-import { useState } from "react";
-import RotatingCube from "@/components/RotatingCube";
-import { login } from "../src/api/authApi";
-import { setToken } from "../src/auth/token";
-import { router } from "expo-router";
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
+import { useState } from 'react'
+import LoginCube from '@/components/LoginCube'
+import { login } from '../src/api/authApi'
+import { setToken } from '../src/auth/token'
+import { router } from 'expo-router'
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,76 +22,78 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Subtrack</Text>
-      <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
+      {/* Cube Layer */}
+      <LoginCube />
 
-      <View style={{ alignItems: 'center', marginTop: 80 }}>
-        <RotatingCube />
+      {/* Content Layer */}
+      <View style={styles.content}>
+        <Text style={styles.title}>Subtrack</Text>
+        <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
+
+        <TextInput
+          placeholder="Email"
+          placeholderTextColor="#94a3b8"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#94a3b8"
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+
+        <Pressable style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Continue</Text>
+        </Pressable>
       </View>
-
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor="#94a3b8"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor="#94a3b8"
-        style={styles.input}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-
-      <Pressable style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Continue</Text>
-      </Pressable>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#020617",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
+    backgroundColor: '#050816',
+  },
+  content: {
+    marginTop: 80,
+    paddingHorizontal: 24,
   },
   title: {
-    color: "white",
-    fontSize: 36,
-    fontWeight: "700",
-    marginBottom: 24,
+    fontSize: 34,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    marginBottom: 6,
   },
   subtitle: {
-    color: "#94a3b8",
     fontSize: 14,
-    marginBottom: 8,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginBottom: 180,
   },
   input: {
-    width: "100%",
-    backgroundColor: "#020617",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 14,
-    padding: 14,
-    color: "white",
-    marginBottom: 12,
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#1E293B',
+    color: '#FFFFFF',
+    marginBottom: 24,
   },
   button: {
-    backgroundColor: "#6366f1",
-    paddingVertical: 14,
-    width: "100%",
-    borderRadius: 14,
-    alignItems: "center",
-    marginTop: 12,
+    marginTop: 30,
+    backgroundColor: '#6D83F2',
+    height: 50,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: "white",
