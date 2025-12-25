@@ -1,53 +1,69 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useEffect } from 'react'
+import { View, StyleSheet } from 'react-native'
+import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import { Easing } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+
+const SIZE = 110
+const DEPTH = SIZE / 2
 
 export default function RotatingCube() {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const rotation = useSharedValue(0)
 
   useEffect(() => {
-    Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
+    rotation.value = Reanimated.withRepeat(
+      withTiming(360, {
         duration: 8000,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, [rotateAnim]);
+        easing: Easing.linear,
+      }),
+      -1
+    )
+  }, [])
 
-  const rotateY = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
-  });
-
-  const rotateX = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
+  const cubeStyle = useAnimatedStyle(() => ({
+    transform: [
+      { perspective: 800 },
+      { rotateX: `${rotation.value}deg` },
+      { rotateY: `${rotation.value}deg` },
+    ],
+  }))
 
   return (
-    <Animated.View
-      style={[
-        styles.cube,
-        {
-          transform: [{ rotateY }, { rotateX }],
-        },
-      ]}
-    >
-      <LinearGradient colors={["#6366f1", "#22d3ee", "#a78bfa"]} style={styles.face} />
-    </Animated.View>
-  );
+    <Reanimated.View style={[styles.cube, cubeStyle]}>
+      <Face colors={['#6A5BFF', '#3CE7F6']} style={{ transform: [{ translateZ: DEPTH }] }} />
+      <Face colors={['#3CE7F6', '#9B8CFF']} style={{ transform: [{ rotateY: '180deg' }, { translateZ: DEPTH }] }} />
+      <Face colors={['#5F6CFF', '#3CE7F6']} style={{ transform: [{ rotateY: '90deg' }, { translateZ: DEPTH }] }} />
+      <Face colors={['#9B8CFF', '#6A5BFF']} style={{ transform: [{ rotateY: '-90deg' }, { translateZ: DEPTH }] }} />
+      <Face colors={['#6A5BFF', '#3CE7F6']} style={{ transform: [{ rotateX: '90deg' }, { translateZ: DEPTH }] }} />
+      <Face colors={['#3CE7F6', '#6A5BFF']} style={{ transform: [{ rotateX: '-90deg' }, { translateZ: DEPTH }] }} />
+    </Reanimated.View>
+  )
+}
+
+function Face({ colors, style }: any) {
+  return (
+    <LinearGradient
+      colors={colors}
+      style={[styles.face, style]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+    />
+  )
 }
 
 const styles = StyleSheet.create({
   cube: {
-    width: 140,
-    height: 140,
-    borderRadius: 20,
-    marginBottom: 40,
+    width: SIZE,
+    height: SIZE,
+    position: 'relative',
+    alignSelf: 'center',
+    marginBottom: 32,
   },
   face: {
-    flex: 1,
-    borderRadius: 20,
+    position: 'absolute',
+    width: SIZE,
+    height: SIZE,
+    borderRadius: 16,
+    backfaceVisibility: 'hidden',
   },
-});
+})

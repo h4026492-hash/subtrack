@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useState } from "react";
-import RotatingCube from "../components/RotatingCube";
+import RotatingCube from "@/components/RotatingCube";
 import { login } from "../src/api/authApi";
 import { setToken } from "../src/auth/token";
 import { router } from "expo-router";
@@ -23,8 +23,11 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Subtrack</Text>
+      <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
 
-      <RotatingCube />
+      <View style={{ marginTop: 40, alignItems: 'center' }}>
+        <RotatingCube />
+      </View>
 
       <TextInput
         placeholder="Email"
@@ -66,6 +69,11 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "700",
     marginBottom: 24,
+  },
+  subtitle: {
+    color: "#94a3b8",
+    fontSize: 14,
+    marginBottom: 8,
   },
   input: {
     width: "100%",
