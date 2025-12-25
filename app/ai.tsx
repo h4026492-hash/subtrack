@@ -7,6 +7,7 @@ import { useRouter } from "expo-router";
 export default function AiScreen() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [result, setResult] = useState<any>(null);
   const router = useRouter();
@@ -19,8 +20,10 @@ export default function AiScreen() {
     try {
       const res = await askAi(text);
       setResult(res);
+      setError(null);
     } catch (e) {
       console.error("AI ERROR", e);
+      setError("Could not understand input. Try again.");
     } finally {
       setLoading(false);
     }
@@ -63,10 +66,20 @@ export default function AiScreen() {
 
       <Pressable
         onPress={handleParse}
-        style={{ marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: "#2563eb", alignItems: "center" }}
+        disabled={loading}
+        style={{ marginTop: 16, padding: 14, borderRadius: 12, backgroundColor: loading ? "#94a3b8" : "#2563eb", alignItems: "center" }}
       >
-        <Text style={{ color: "white", fontWeight: "600" }}>Parse with AI</Text>
+        {loading ? <ActivityIndicator color="white" /> : <Text style={{ color: "white", fontWeight: "600" }}>Parse with AI</Text>}
       </Pressable>
+
+      {error && (
+        <View style={{ marginTop: 12, alignItems: 'center' }}>
+          <Text style={{ color: '#f87171', marginBottom: 8 }}>{error}</Text>
+          <Pressable onPress={handleParse} style={{ padding: 10, backgroundColor: '#2563eb', borderRadius: 8 }}>
+            <Text style={{ color: 'white' }}>Retry</Text>
+          </Pressable>
+        </View>
+      )}
 
       {loading && <ActivityIndicator style={{ marginTop: 20 }} color="white" />}
 

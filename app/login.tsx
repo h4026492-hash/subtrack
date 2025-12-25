@@ -1,4 +1,4 @@
-import { View, Text, TextInput, Pressable, Alert } from "react-native";
+import { View, Text, TextInput, Pressable, Alert, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { useState } from "react";
 import { login } from "../src/api/authApi";
@@ -7,18 +7,28 @@ import { setSessionToken } from "../src/auth/session";
 export default function Login() {
   const [email, setEmail] = useState("test@test.com");
   const [password, setPassword] = useState("test");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async () => {
     try {
+      setLoading(true);
+      setError(null);
       const token = await login(email, password);
       console.log("TOKEN RECEIVED", token);
 
       setSessionToken(token); // store in-memory for API requests
+      // Persist token for future sessions
+      // setToken is async; do not await to avoid blocking UX here (we rely on session for immediate requests)
+      // but fire-and-forget persistence is fine
+      import("../src/auth/token").then((mod) => mod.setToken(token)).catch(() => {});
 
       router.replace("/dashboard");
     } catch (e: any) {
-      console.error("LOGIN FAILED", e?.response?.status);
-      Alert.alert("Login failed", "Check credentials or backend");
+      console.error("LOGIN FAILED", e?.response?.status, e?.message);
+      setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,17 +74,18 @@ export default function Login() {
         }}
       />
 
+      {error ? <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text> : null}
+
       <Pressable
         onPress={handleLogin}
-        style={{
-          padding: 16,
-          backgroundColor: "#2563eb",
-          borderRadius: 10,
-        }}
+        disabled={loading}
+        style={{ padding: 16, backgroundColor: loading ? "#94a3b8" : "#2563eb", borderRadius: 10 }}
       >
-        <Text style={{ color: "white", textAlign: "center", fontSize: 16 }}>
-          Login
-        </Text>
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={{ color: "white", textAlign: "center", fontSize: 16 }}>Login</Text>
+        )}
       </Pressable>
     </View>
   );

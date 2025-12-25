@@ -9,50 +9,49 @@ import GlassCard from "../components/GlassCard";
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [dashboard, setDashboard] = useState<any>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      if (!token) {
+        router.replace("/login");
+        return;
+      }
+      const data = await getDashboard();
+      setDashboard(data);
+    } catch (e) {
+      console.error("DASHBOARD ERROR", e);
+      setError("Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const token = await getToken();
-        if (!token) {
-          console.log("NO TOKEN, REDIRECTING");
-          router.replace("/login");
-          return;
-        }
-        const data = await getDashboard();
-        setDashboard(data);
-      } catch (e) {
-        console.error("DASHBOARD ERROR", e);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     load();
   }, []);
 
   if (loading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "#020617",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+      <View style={{ flex: 1, backgroundColor: "#020617", justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#ffffff" />
-        <Text style={{ color: "#94a3b8", marginTop: 12 }}>
-          Loading your subscriptions…
-        </Text>
+        <Text style={{ color: "#94a3b8", marginTop: 12 }}>Loading your subscriptions…</Text>
       </View>
     );
   }
 
   if (error) {
-    return <Text style={{ padding: 20 }}>Failed to load dashboard</Text>;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#020617", padding: 16 }}>
+        <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text>
+        <Pressable onPress={load} style={{ padding: 12, backgroundColor: "#2563eb", borderRadius: 8 }}>
+          <Text style={{ color: "white" }}>Retry</Text>
+        </Pressable>
+      </View>
+    );
   }
 
   if (!dashboard || dashboard.subscriptions.length === 0) {
