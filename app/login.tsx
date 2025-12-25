@@ -25,7 +25,7 @@ export default function Login() {
       <Text style={styles.title}>Subtrack</Text>
       <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
 
-      <View style={{ marginTop: 40, alignItems: 'center' }}>
+      <View style={{ alignItems: 'center', marginTop: 80 }}>
         <RotatingCube />
       </View>
 
