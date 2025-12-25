@@ -40,15 +40,12 @@ export default function LoginCube() {
 
 const styles = StyleSheet.create({
   cube: {
-    position: 'absolute',
-    top: 160,
-    alignSelf: 'center',
     width: 120,
     height: 120,
     opacity: 0.9,
   },
   face: {
     flex: 1,
-    borderRadius: 24,
+    borderRadius: 28,
   },
 })
