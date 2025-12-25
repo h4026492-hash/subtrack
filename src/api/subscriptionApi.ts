@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient, { api } from "./apiClient";
 import { getToken } from "../auth/token";
 
 export async function fetchSubscriptions() {
@@ -25,7 +25,16 @@ export const addSubscription = async (subscription: { name: string; amount: numb
 };
 
 // Backwards-compatible alias: older UI expects createSubscription
-export const createSubscription = addSubscription;
+export const createSubscription = async (data: {
+  provider: string;
+  plan: string;
+  price: number;
+  billingCycle: "MONTHLY" | "YEARLY";
+}) => {
+  // Use the shared api instance which will attach the session token
+  const res = await api.post('/subscriptions', data);
+  return res.data;
+};
 
 export const getSubscriptionInsight = async (id: number) => {
   const res = await apiClient.get(`/ai/subscription/${id}`);
