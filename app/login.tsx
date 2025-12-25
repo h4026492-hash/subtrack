@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState } from 'react'
 import LoginCube from '@/components/LoginCube'
 import { login } from '../src/api/authApi'
@@ -21,15 +22,19 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Cube Layer */}
-      <LoginCube />
+    <SafeAreaView style={styles.container} edges={['top']}>
 
-      {/* Content Layer */}
-      <View style={styles.content}>
-        <Text style={styles.title}>Subtrack</Text>
-        <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
+      {/* HERO */}
+      <View style={styles.hero}>
+        <LoginCube />
+      </View>
 
+      {/* TITLE */}
+      <Text style={styles.title}>Subtrack</Text>
+      <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
+
+      {/* FORM */}
+      <View style={styles.form}>
         <TextInput
           placeholder="Email"
           placeholderTextColor="#94a3b8"
@@ -38,14 +43,13 @@ export default function Login() {
           onChangeText={setEmail}
           autoCapitalize="none"
         />
-
         <TextInput
           placeholder="Password"
           placeholderTextColor="#94a3b8"
+          secureTextEntry
           style={styles.input}
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -54,7 +58,8 @@ export default function Login() {
           <Text style={styles.buttonText}>Continue</Text>
         </Pressable>
       </View>
-    </View>
+
+    </SafeAreaView>
   )
 }
 
@@ -67,18 +72,28 @@ const styles = StyleSheet.create({
     marginTop: 80,
     paddingHorizontal: 24,
   },
+  hero: {
+    height: 240,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+
   title: {
-    fontSize: 34,
+    fontSize: 36,
     fontWeight: '700',
     color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 6,
+    marginTop: 8,
   },
+
   subtitle: {
     fontSize: 14,
     color: '#94A3B8',
-    textAlign: 'center',
-    marginBottom: 180,
+    marginTop: 4,
+    marginBottom: 32,
+  },
+  form: {
+    width: '85%'
   },
   input: {
     height: 48,
