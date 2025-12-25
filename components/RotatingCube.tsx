@@ -1,41 +1,42 @@
 import React, { useEffect } from 'react'
-import { View, StyleSheet } from 'react-native'
-import Reanimated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
-import { Easing } from 'react-native'
+import { StyleSheet } from 'react-native'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated'
 import { LinearGradient } from 'expo-linear-gradient'
 
 const SIZE = 120
 
 export default function RotatingCube() {
-  const rotate = useSharedValue(0)
+  const rotation = useSharedValue(0)
 
   useEffect(() => {
-    rotate.value = Reanimated.withRepeat(
-      withTiming(360, {
-        duration: 9000,
-        easing: Easing.linear,
-      }),
-      -1
+    rotation.value = Animated.withRepeat(
+      withTiming(360, { duration: 9000 }),
+      -1,
+      false
     )
   }, [])
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { perspective: 800 },
-      { rotateX: `${rotate.value}deg` },
-      { rotateY: `${rotate.value}deg` },
+      { rotateX: `${rotation.value}deg` },
+      { rotateY: `${rotation.value}deg` },
     ],
   }))
 
   return (
-    <Reanimated.View style={[styles.container, animatedStyle]}>
+    <Animated.View style={[styles.container, animatedStyle]}>
       <Face colors={['#6A5BFF', '#3CE7F6']} />
-      <Face colors={['#3CE7F6', '#9B8CFF']} style={styles.faceBack} />
-      <Face colors={['#5F6CFF', '#3CE7F6']} style={styles.faceLeft} />
-      <Face colors={['#9B8CFF', '#6A5BFF']} style={styles.faceRight} />
-      <Face colors={['#6A5BFF', '#3CE7F6']} style={styles.faceTop} />
-      <Face colors={['#3CE7F6', '#6A5BFF']} style={styles.faceBottom} />
-    </Reanimated.View>
+      <Face colors={['#3CE7F6', '#9B8CFF']} style={styles.back} />
+      <Face colors={['#5F6CFF', '#3CE7F6']} style={styles.left} />
+      <Face colors={['#9B8CFF', '#6A5BFF']} style={styles.right} />
+      <Face colors={['#6A5BFF', '#3CE7F6']} style={styles.top} />
+      <Face colors={['#3CE7F6', '#6A5BFF']} style={styles.bottom} />
+    </Animated.View>
   )
 }
 
@@ -62,27 +63,28 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: SIZE,
     height: SIZE,
-    borderRadius: 18,
+    borderRadius: 20,
     opacity: 0.9,
   },
 
-  faceBack: {
+  back: {
     transform: [{ rotateY: '180deg' }],
   },
 
-  faceLeft: {
+  left: {
     transform: [{ rotateY: '-90deg' }],
   },
 
-  faceRight: {
+  right: {
     transform: [{ rotateY: '90deg' }],
   },
 
-  faceTop: {
+  top: {
     transform: [{ rotateX: '90deg' }],
   },
 
-  faceBottom: {
+  bottom: {
     transform: [{ rotateX: '-90deg' }],
   },
 })
+

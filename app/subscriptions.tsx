@@ -1,6 +1,6 @@
 import { Text, ScrollView, Animated, Pressable } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { getSubscriptionInsight, getSubscriptions } from "../src/api/subscriptionApi.js";
+import { getSubscriptionInsight, getSubscriptions } from "../src/api/subscriptionApi";
 import { useRouter } from "expo-router";
 
 export default function Subscriptions() {
