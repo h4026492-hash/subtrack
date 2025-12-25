@@ -1,7 +1,7 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useState } from 'react'
-import LoginCube from '@/components/LoginCube'
+import { CubeHero } from '@/components/CubeHero'
 import { login } from '../src/api/authApi'
 import { setToken } from '../src/auth/token'
 import { router } from 'expo-router'
@@ -26,7 +26,7 @@ export default function Login() {
 
       {/* HERO */}
       <View style={styles.hero}>
-        <LoginCube />
+        <CubeHero />
       </View>
 
       {/* TITLE */}
