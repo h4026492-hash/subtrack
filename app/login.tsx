@@ -1,122 +1,86 @@
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { useState } from 'react'
-import { CubeHero } from '@/components/CubeHero'
-import { login } from '../src/api/authApi'
-import { setToken } from '../src/auth/token'
 import { router } from 'expo-router'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import RotatingCube from '../components/RotatingCube'
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [email, setEmail] = useState('test@test.com')
+  const [password, setPassword] = useState('test')
+  const [loading, setLoading] = useState(false)
 
   const handleLogin = async () => {
+    if (loading) return
+    setLoading(true)
+
     try {
-      const token = await login(email, password);
-      await setToken(String(token));
-      router.replace("/dashboard");
-    } catch (e) {
-      setError("Invalid email or password");
+      console.log('LOGIN CLICKED')
+
+      const res = await axios.post('http://localhost:8081/auth/login', {
+        email,
+        password,
+      })
+
+      const token = res.data?.token
+      console.log('TOKEN RECEIVED', token)
+
+      if (!token) {
+        throw new Error('Token missing')
+      }
+
+      await AsyncStorage.setItem('token', token)
+
+      // 🔥 THIS LINE IS WHAT WAS MISSING / NOT RUNNING
+      router.replace('/dashboard')
+    } catch (err: any) {
+      console.log('LOGIN FAILED', err?.response?.status)
+      Alert.alert('Login failed')
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-
-      {/* HERO */}
-      <View style={styles.hero}>
-        <CubeHero />
+    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+      <View style={{ alignItems: 'center', marginBottom: 40 }}>
+        <RotatingCube />
       </View>
 
-      {/* TITLE */}
-      <Text style={styles.title}>Subtrack</Text>
-      <Text style={styles.subtitle}>Track subscriptions effortlessly</Text>
+      <Text style={{ fontSize: 28, fontWeight: '600', marginBottom: 20 }}>
+        Subtrack
+      </Text>
 
-      {/* FORM */}
-      <View style={styles.form}>
-        <TextInput
-          placeholder="Email"
-          placeholderTextColor="#94a3b8"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-        />
-        <TextInput
-          placeholder="Password"
-          placeholderTextColor="#94a3b8"
-          secureTextEntry
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-        />
+      <TextInput
+        value={email}
+        onChangeText={setEmail}
+        placeholder="Email"
+        autoCapitalize="none"
+        style={{ borderWidth: 1, padding: 12, marginBottom: 12 }}
+      />
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+      <TextInput
+        value={password}
+        onChangeText={setPassword}
+        placeholder="Password"
+        secureTextEntry
+        style={{ borderWidth: 1, padding: 12, marginBottom: 20 }}
+      />
 
-        <Pressable style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Continue</Text>
-        </Pressable>
-      </View>
-
-    </SafeAreaView>
+      <TouchableOpacity
+        onPress={handleLogin}
+        style={{
+          backgroundColor: '#2563eb',
+          padding: 16,
+          alignItems: 'center',
+          borderRadius: 10,
+        }}
+      >
+        <Text style={{ color: '#fff', fontSize: 16 }}>
+          {loading ? 'Signing in...' : 'Continue'}
+        </Text>
+      </TouchableOpacity>
+    </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#050816',
-  },
-  content: {
-    marginTop: 80,
-    paddingHorizontal: 24,
-  },
-  hero: {
-    height: 240,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-  },
-
-  title: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginTop: 8,
-  },
-
-  subtitle: {
-    fontSize: 14,
-    color: '#94A3B8',
-    marginTop: 4,
-    marginBottom: 32,
-  },
-  form: {
-    width: '85%'
-  },
-  input: {
-    height: 48,
-    borderBottomWidth: 1,
-    borderBottomColor: '#1E293B',
-    color: '#FFFFFF',
-    marginBottom: 24,
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: '#6D83F2',
-    height: 50,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  error: {
-    color: "#f87171",
-    marginBottom: 8,
-  },
-});
