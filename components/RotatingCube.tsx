@@ -23,9 +23,8 @@ export default function RotatingCube() {
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 900 },
+      { perspective: 1200 },
       { rotateY: `${rotate.value}deg` },
-      { rotateX: `${rotate.value * 0.6}deg` },
     ],
   }))
 
