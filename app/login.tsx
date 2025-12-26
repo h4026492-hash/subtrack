@@ -43,8 +43,14 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <View style={{ alignItems: 'center', marginBottom: 40 }}>
+      <View style={styles.hero}>
         <RotatingCube />
+
+        <Text style={styles.quote}>Track. Analyze. Cancel.</Text>
+
+        <Text style={styles.subQuote}>
+          Take control of your subscriptions with Subtrack
+        </Text>
       </View>
 
       <Text style={styles.title}>Subtrack</Text>
@@ -100,6 +106,22 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#FFFFFF',
     borderColor: '#1E293B',
+  },
+  hero: {
+    alignItems: 'center',
+    marginTop: 80,
+    marginBottom: 16,
+  },
+  quote: {
+    marginTop: 24,
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  subQuote: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#A0A3B1',
   },
 })
 

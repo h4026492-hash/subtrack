@@ -15,7 +15,7 @@ export default function RotatingCube() {
 
   useEffect(() => {
     rotate.value = withRepeat(
-      withTiming(360, { duration: 8000 }),
+      withTiming(360, { duration: 12000 }),
       -1,
       false
     )
@@ -23,9 +23,9 @@ export default function RotatingCube() {
 
   const cubeStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 900 },
+      { perspective: 1000 },
       { rotateY: `${rotate.value}deg` },
-      { rotateX: `${rotate.value * 0.6}deg` },
+      { rotateX: `${rotate.value * 0.8}deg` },
     ],
   }))
 
