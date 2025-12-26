@@ -1,5 +1,11 @@
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withRepeat,
+} from 'react-native-reanimated'
 import { router } from 'expo-router'
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
@@ -9,6 +15,39 @@ export default function Login() {
   const [email, setEmail] = useState('test@test.com')
   const [password, setPassword] = useState('test')
   const [loading, setLoading] = useState(false)
+
+  const quoteOpacity = useSharedValue(0)
+  const quoteTranslate = useSharedValue(6)
+
+  const glowScale = useSharedValue(0.95)
+  const glowOpacity = useSharedValue(0.35)
+
+  useEffect(() => {
+    quoteOpacity.value = withTiming(1, { duration: 600 })
+    quoteTranslate.value = withTiming(0, { duration: 600 })
+
+    glowScale.value = withRepeat(
+      withTiming(1.05, { duration: 1800 }),
+      -1,
+      true
+    )
+
+    glowOpacity.value = withRepeat(
+      withTiming(0.55, { duration: 1800 }),
+      -1,
+      true
+    )
+  }, [])
+
+  const quoteStyle = useAnimatedStyle(() => ({
+    opacity: quoteOpacity.value,
+    transform: [{ translateY: quoteTranslate.value }],
+  }))
+
+  const glowStyle = useAnimatedStyle(() => ({
+    opacity: glowOpacity.value,
+    transform: [{ scale: glowScale.value }],
+  }))
 
   const handleLogin = async () => {
     if (loading) return
@@ -43,15 +82,16 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-          <View style={{ marginTop: 40, alignItems: 'center' }}>
+          <View style={{ marginTop: 40, alignItems: 'center', position: 'relative' }}>
+            <Animated.View style={[styles.glow, glowStyle]} />
             <RotatingLogos />
           </View>
 
       <Text style={styles.title}>Subtrack</Text>
 
-          <Text style={styles.quote}>
+          <Animated.Text style={[styles.quote, quoteStyle]}>
             Subscriptions shouldn’t surprise you.
-          </Text>
+          </Animated.Text>
 
       <TextInput
         value={email}
@@ -121,6 +161,18 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 14,
     color: '#A0A3B1',
+  },
+  glow: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#4F7CFF',
+    opacity: 0.4,
+    shadowColor: '#4F7CFF',
+    shadowOpacity: 0.6,
+    shadowRadius: 30,
+    shadowOffset: { width: 0, height: 0 },
   },
 })
 
