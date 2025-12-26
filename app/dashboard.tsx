@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, ScrollView } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import api from '../lib/api'
 
 export default function Dashboard() {
@@ -24,7 +25,7 @@ export default function Dashboard() {
   }, [])
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Dashboard</Text>
 
       {error && <Text style={styles.errorText}>403 Unauthorized</Text>}
@@ -41,25 +42,11 @@ export default function Dashboard() {
           ))}
         </ScrollView>
       )}
-    </View>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0B1020',
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  title: {
-    color: 'white',
-    fontSize: 28,
-    fontWeight: '700',
-    alignSelf: 'flex-start',
-    marginBottom: 12,
-  },
   errorText: {
     color: 'red',
     marginBottom: 12,
@@ -81,8 +68,22 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   meta: {
-    color: '#94a3b8',
+    color: '#C7C7CC',
     marginTop: 4,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#0B1020',
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  title: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: '700',
+    alignSelf: 'flex-start',
+    marginBottom: 12,
   },
 })
 

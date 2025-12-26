@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native'
 import { useState } from 'react'
 import { router } from 'expo-router'
 import axios from 'axios'
@@ -42,21 +42,19 @@ export default function Login() {
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', padding: 24 }}>
+    <View style={styles.container}>
       <View style={{ alignItems: 'center', marginBottom: 40 }}>
         <RotatingCube />
       </View>
 
-      <Text style={{ fontSize: 28, fontWeight: '600', marginBottom: 20 }}>
-        Subtrack
-      </Text>
+      <Text style={styles.title}>Subtrack</Text>
 
       <TextInput
         value={email}
         onChangeText={setEmail}
         placeholder="Email"
         autoCapitalize="none"
-        style={{ borderWidth: 1, padding: 12, marginBottom: 12 }}
+        style={[styles.input, { marginBottom: 12 }]}
       />
 
       <TextInput
@@ -64,7 +62,7 @@ export default function Login() {
         onChangeText={setPassword}
         placeholder="Password"
         secureTextEntry
-        style={{ borderWidth: 1, padding: 12, marginBottom: 20 }}
+        style={[styles.input, { marginBottom: 20 }]}
       />
 
       <TouchableOpacity
@@ -83,4 +81,25 @@ export default function Login() {
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0B1020',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '600',
+    marginBottom: 20,
+    color: 'white',
+  },
+  input: {
+    borderWidth: 1,
+    padding: 12,
+    color: '#FFFFFF',
+    borderColor: '#1E293B',
+  },
+})
 
