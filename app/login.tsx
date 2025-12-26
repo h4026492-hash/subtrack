@@ -45,10 +45,13 @@ export default function Login() {
     <View style={styles.container}>
           <View style={{ marginTop: 40, alignItems: 'center' }}>
             <RotatingLogos />
-            <Text style={{ marginTop: 20, color: '#aaa' }}>Track. Analyze. Cancel.</Text>
           </View>
 
       <Text style={styles.title}>Subtrack</Text>
+
+          <Text style={styles.quote}>
+            Subscriptions shouldn’t surprise you.
+          </Text>
 
       <TextInput
         value={email}
@@ -108,10 +111,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   quote: {
-    marginTop: 24,
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    marginTop: 6,
+    marginBottom: 28,
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 0.4,
   },
   subQuote: {
     marginTop: 8,
