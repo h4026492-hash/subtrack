@@ -1,97 +1,130 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, ScrollView, StyleSheet } from 'react-native'
-import api from '../lib/api'
+import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 export default function Dashboard() {
   const [subscriptions, setSubscriptions] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await api.get('/subscriptions')
-        // API returns either array or object; normalize to array
-        const subs = res.data?.subscriptions ?? res.data ?? []
-        setSubscriptions(subs)
-      } catch (e) {
-        console.log('DASHBOARD ERROR', e)
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
+    fetchSubscriptions()
   }, [])
+
+  const fetchSubscriptions = async () => {
+    try {
+      const res = await axios.get('/subscriptions')
+      setSubscriptions(res.data || [])
+    } catch (e) {
+      console.log('DASHBOARD ERROR', e)
+    }
+  }
+
+  const totalMonthly = subscriptions.reduce(
+    (sum, s) => sum + (s.price || 0),
+    0
+  )
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your Subscriptions</Text>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text style={styles.title}>Your Subscriptions</Text>
+        <Text style={styles.subtitle}>
+          {subscriptions.length} active · ${totalMonthly} / month
+        </Text>
+      </View>
 
-      {loading ? (
-        <Text style={styles.loading}>Loading…</Text>
-      ) : (
-        <ScrollView>
-          {subscriptions.map((s, index) => (
-            <View key={s.id ?? index} style={styles.card}>
-              <Text style={styles.plan}>{s.name ?? s.plan ?? 'Untitled'}</Text>
-              <Text style={styles.meta}>${s.price} / {s.billingCycle ?? 'month'}</Text>
+      {/* LIST */}
+      <FlatList
+        data={subscriptions}
+        keyExtractor={(_, i) => String(i)}
+        contentContainerStyle={{ paddingBottom: 120 }}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <View style={styles.cardLeft} />
+            <View style={styles.cardContent}>
+              <Text style={styles.plan}>
+                {item.name || 'Unknown Subscription'}
+              </Text>
+              <Text style={styles.meta}>
+                ${item.price} · {item.billingCycle || 'Monthly'}
+              </Text>
             </View>
-          ))}
-        </ScrollView>
-      )}
+          </View>
+        )}
+      />
+
+      {/* FLOATING ADD */}
+      <Pressable style={styles.fab}>
+        <Text style={styles.fabText}>＋</Text>
+      </Pressable>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  errorText: {
-    color: 'red',
-    marginBottom: 12,
-  },
-  empty: {
-    color: '#94a3b8',
-    marginTop: 40,
-  },
-  list: {
-    paddingBottom: 40,
-  },
-  item: {
-    marginBottom: 12,
-    width: '100%',
-  },
-  plan: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  meta: {
-    color: '#C7C7CC',
-    marginTop: 4,
-  },
   container: {
     flex: 1,
     backgroundColor: '#0B1020',
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  header: {
+    marginBottom: 24,
   },
   title: {
-    color: 'white',
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
-    alignSelf: 'flex-start',
-    marginBottom: 12,
+    color: '#FFFFFF',
   },
-  loading: {
+  subtitle: {
+    marginTop: 6,
+    fontSize: 15,
     color: '#9CA3AF',
-    marginTop: 40,
   },
+
   card: {
-    backgroundColor: '#111827',
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 18,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  cardLeft: {
+    width: 6,
+    backgroundColor: '#4F8CFF',
+  },
+  cardContent: {
+    padding: 18,
+  },
+  plan: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+  meta: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#9CA3AF',
+  },
+
+  fab: {
+    position: 'absolute',
+    right: 24,
+    bottom: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4F8CFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fabText: {
+    fontSize: 30,
+    color: '#FFFFFF',
+    marginTop: -2,
   },
 })
+
 
 
 
