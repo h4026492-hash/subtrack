@@ -2,8 +2,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
 import { useState } from 'react'
 import { router } from 'expo-router'
 import axios from 'axios'
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import RotatingCube from '../components/RotatingCube'
+import * as SecureStore from 'expo-secure-store'
+import RotatingCube from '../components/RotatingCubeFixed'
 
 export default function Login() {
   const [email, setEmail] = useState('test@test.com')
@@ -29,7 +29,7 @@ export default function Login() {
         throw new Error('Token missing')
       }
 
-      await AsyncStorage.setItem('token', token)
+      await SecureStore.setItemAsync('token', token)
 
       // 🔥 THIS LINE IS WHAT WAS MISSING / NOT RUNNING
       router.replace('/dashboard')

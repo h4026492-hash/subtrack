@@ -1,10 +1,15 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router'
+import { View } from 'react-native'
 
 export default function RootLayout() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="login" />
-      <Stack.Screen name="dashboard" />
-    </Stack>
-  );
+    <View style={{ flex: 1, backgroundColor: '#0B1020' }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: '#0B1020' },
+        }}
+      />
+    </View>
+  )
 }
