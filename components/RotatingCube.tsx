@@ -30,22 +30,52 @@ export default function RotatingCube() {
 
   return (
     <View style={styles.scene}>
-      <Animated.View style={[styles.cube, animatedStyle]}>
-        <Face logo={require('../assets/logos/netflix.png')} style={{ transform: [{ translateZHack: 1 }] }} />
-        <Face logo={require('../assets/logos/prime.png')} style={{ transform: [{ rotateY: '90deg' }, { translateX: HALF }] }} />
-        <Face logo={require('../assets/logos/hulu.png')} style={{ transform: [{ rotateY: '180deg' }, { translateX: HALF }] }} />
-        <Face logo={require('../assets/logos/appletv.png')} style={{ transform: [{ rotateY: '-90deg' }, { translateX: HALF }] }} />
-        <Face logo={require('../assets/logos/paramount.png')} style={{ transform: [{ rotateX: '90deg' }, { translateY: -HALF }] }} />
-        <Face logo={require('../assets/logos/disney.png')} style={{ transform: [{ rotateX: '-90deg' }, { translateY: HALF }] }} />
+      <Animated.View style={[styles.cube, animatedStyle, { transformStyle: 'preserve-3d' }]}>
+        <Face source={require('../assets/logos/netflix.png')} style={{ transform: [{ translateZ: HALF }] }} />
+
+        <Face
+          source={require('../assets/logos/prime.png')}
+          style={{ transform: [{ rotateY: '90deg' }, { translateZ: HALF }] }}
+        />
+
+        <Face
+          source={require('../assets/logos/hulu.png')}
+          style={{ transform: [{ rotateY: '180deg' }, { translateZ: HALF }] }}
+        />
+
+        <Face
+          source={require('../assets/logos/appletv.png')}
+          style={{ transform: [{ rotateY: '-90deg' }, { translateZ: HALF }] }}
+        />
+
+        <Face
+          source={require('../assets/logos/paramount.png')}
+          style={{ transform: [{ rotateX: '90deg' }, { translateZ: HALF }] }}
+        />
+
+        <Face
+          source={require('../assets/logos/disney.png')}
+          style={{ transform: [{ rotateX: '-90deg' }, { translateZ: HALF }] }}
+        />
       </Animated.View>
     </View>
   )
 }
 
-function Face({ logo, style }: any) {
+function Face({ source, style }: any) {
   return (
-    <View style={[styles.face, style]}>
-      <Image source={logo} style={styles.logo} resizeMode="contain" />
+    <View
+      style={[
+        styles.face,
+        {
+          transform: [
+            ...(style?.transform ?? []),
+            { translateZ: 0 }, // forces RN to keep 3D context
+          ],
+        },
+      ]}
+    >
+      <Image source={source} style={styles.logo} resizeMode="contain" />
     </View>
   )
 }
