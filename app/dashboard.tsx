@@ -1,48 +1,44 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { View, Text, ScrollView, StyleSheet } from 'react-native'
 import api from '../lib/api'
 
 export default function Dashboard() {
-  const [error, setError] = useState(false)
   const [subscriptions, setSubscriptions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const load = async () => {
+    async function load() {
       try {
         const res = await api.get('/subscriptions')
-        console.log('SUBSCRIPTIONS', res.data)
-        // support both res.data.subscriptions and res.data itself
+        // API returns either array or object; normalize to array
         const subs = res.data?.subscriptions ?? res.data ?? []
         setSubscriptions(subs)
       } catch (e) {
         console.log('DASHBOARD ERROR', e)
-        setError(true)
+      } finally {
+        setLoading(false)
       }
     }
-
     load()
   }, [])
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40, width: '100%' }}>
-        <Text style={styles.title}>Dashboard</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Your Subscriptions</Text>
 
-        {error && <Text style={styles.errorText}>403 Unauthorized</Text>}
-
-        {subscriptions.length === 0 && !error ? (
-          <Text style={styles.empty}>No subscriptions yet</Text>
-        ) : (
-          subscriptions.map((s: any) => (
-            <View key={s.id ?? JSON.stringify(s)} style={styles.item}>
-              <Text style={styles.plan}>{s.plan ?? s.name ?? 'Untitled'}</Text>
+      {loading ? (
+        <Text style={styles.loading}>Loading…</Text>
+      ) : (
+        <ScrollView>
+          {subscriptions.map((s, index) => (
+            <View key={s.id ?? index} style={styles.card}>
+              <Text style={styles.plan}>{s.name ?? s.plan ?? 'Untitled'}</Text>
               <Text style={styles.meta}>${s.price} / {s.billingCycle ?? 'month'}</Text>
             </View>
-          ))
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          ))}
+        </ScrollView>
+      )}
+    </View>
   )
 }
 
@@ -74,7 +70,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0B1020',
-    paddingHorizontal: 20,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
@@ -83,6 +79,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     alignSelf: 'flex-start',
+    marginBottom: 12,
+  },
+  loading: {
+    color: '#9CA3AF',
+    marginTop: 40,
+  },
+  card: {
+    backgroundColor: '#111827',
+    padding: 16,
+    borderRadius: 16,
     marginBottom: 12,
   },
 })
