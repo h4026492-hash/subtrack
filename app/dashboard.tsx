@@ -26,22 +26,22 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Dashboard</Text>
+      <ScrollView contentContainerStyle={{ paddingBottom: 40, width: '100%' }}>
+        <Text style={styles.title}>Dashboard</Text>
 
-      {error && <Text style={styles.errorText}>403 Unauthorized</Text>}
+        {error && <Text style={styles.errorText}>403 Unauthorized</Text>}
 
-      {subscriptions.length === 0 && !error ? (
-        <Text style={styles.empty}>No subscriptions yet</Text>
-      ) : (
-        <ScrollView style={{ width: '100%' }} contentContainerStyle={styles.list}>
-          {subscriptions.map((s: any) => (
+        {subscriptions.length === 0 && !error ? (
+          <Text style={styles.empty}>No subscriptions yet</Text>
+        ) : (
+          subscriptions.map((s: any) => (
             <View key={s.id ?? JSON.stringify(s)} style={styles.item}>
               <Text style={styles.plan}>{s.plan ?? s.name ?? 'Untitled'}</Text>
               <Text style={styles.meta}>${s.price} / {s.billingCycle ?? 'month'}</Text>
             </View>
-          ))}
-        </ScrollView>
-      )}
+          ))
+        )}
+      </ScrollView>
     </SafeAreaView>
   )
 }
