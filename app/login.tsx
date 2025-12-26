@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { router } from 'expo-router'
 import axios from 'axios'
 import * as SecureStore from 'expo-secure-store'
-import RotatingCube from '../components/RotatingCubeFixed'
+import RotatingLogos from '../components/RotatingLogos'
 
 export default function Login() {
   const [email, setEmail] = useState('test@test.com')
@@ -43,15 +43,10 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.hero}>
-        <RotatingCube />
-
-        <Text style={styles.quote}>Track. Analyze. Cancel.</Text>
-
-        <Text style={styles.subQuote}>
-          Take control of your subscriptions with Subtrack
-        </Text>
-      </View>
+          <View style={{ marginTop: 40, alignItems: 'center' }}>
+            <RotatingLogos />
+            <Text style={{ marginTop: 20, color: '#aaa' }}>Track. Analyze. Cancel.</Text>
+          </View>
 
       <Text style={styles.title}>Subtrack</Text>
 
