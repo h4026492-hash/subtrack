@@ -1,93 +1,87 @@
-// Clean Add screen (single implementation)
-import { View, Text, TextInput, Pressable, ActivityIndicator } from "react-native";
-import { useEffect, useState } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { createSubscription } from "../src/api/subscriptionApi";
+import React, { useState } from 'react'
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
+import { router } from 'expo-router'
+import api from '../lib/api'
 
 export default function AddSubscription() {
-  const router = useRouter();
-  const params = useLocalSearchParams();
+  const [name, setName] = useState('')
+  const [price, setPrice] = useState('')
+  const [saving, setSaving] = useState(false)
 
-  const [provider, setProvider] = useState("");
-  const [plan, setPlan] = useState("");
-  const [price, setPrice] = useState("");
-  const [billingCycle, setBillingCycle] = useState<"MONTHLY" | "YEARLY">("MONTHLY");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (params.provider) setProvider(String(params.provider));
-    if (params.plan) setPlan(String(params.plan));
-    if (params.price) setPrice(String(params.price));
-    if (params.billingCycle) {
-      setBillingCycle(params.billingCycle as "MONTHLY" | "YEARLY");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const submit = async () => {
-    if (!provider || !plan || !price) {
-      setError("All fields are required");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
+  const save = async () => {
+    if (saving) return
+    setSaving(true)
     try {
-      await createSubscription({ provider, plan, price: Number(price), billingCycle });
-      router.replace("/dashboard");
+      await api.post('/subscriptions', {
+        name,
+        price: Number(price),
+        billingCycle: 'MONTHLY',
+      })
+
+      router.replace('/dashboard')
     } catch (e) {
-      console.error("ADD SUBSCRIPTION ERROR", e);
-      setError("Failed to add subscription");
+      console.log('SAVE ERROR', e)
     } finally {
-      setLoading(false);
+      setSaving(false)
     }
-  };
+  }
 
   return (
-    <View style={{ flex: 1, padding: 20, backgroundColor: "#0f172a" }}>
-      <Text style={{ color: "white", fontSize: 24, marginBottom: 20 }}>Add Subscription</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Add subscription</Text>
 
       <TextInput
-        placeholder="Provider (Netflix)"
-        placeholderTextColor="#94a3b8"
-        value={provider}
-        onChangeText={setProvider}
-        style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "white", padding: 14, borderRadius: 12, marginBottom: 12 }}
+        placeholder="Netflix"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
       />
 
       <TextInput
-        placeholder="Plan (Premium)"
-        placeholderTextColor="#94a3b8"
-        value={plan}
-        onChangeText={setPlan}
-        style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "white", padding: 14, borderRadius: 12, marginBottom: 12 }}
-      />
-
-      <TextInput
-        placeholder="Price"
-        placeholderTextColor="#94a3b8"
+        placeholder="15"
+        keyboardType="numeric"
         value={price}
         onChangeText={setPrice}
-        keyboardType="numeric"
-        style={{ backgroundColor: "rgba(255,255,255,0.1)", color: "white", padding: 14, borderRadius: 12, marginBottom: 12 }}
+        style={styles.input}
       />
 
-      <View style={{ flexDirection: "row", marginBottom: 20 }}>
-        <Pressable onPress={() => setBillingCycle("MONTHLY")} style={{ flex: 1, padding: 14, marginRight: 8, borderRadius: 12, backgroundColor: billingCycle === "MONTHLY" ? "#22c55e" : "rgba(255,255,255,0.1)" }}>
-          <Text style={{ color: "white", textAlign: "center" }}>Monthly</Text>
-        </Pressable>
-        <Pressable onPress={() => setBillingCycle("YEARLY")} style={{ flex: 1, padding: 14, borderRadius: 12, backgroundColor: billingCycle === "YEARLY" ? "#22c55e" : "rgba(255,255,255,0.1)" }}>
-          <Text style={{ color: "white", textAlign: "center" }}>Yearly</Text>
-        </Pressable>
-      </View>
-
-      {error && <Text style={{ color: "#f87171", marginBottom: 12 }}>{error}</Text>}
-
-      <Pressable onPress={submit} disabled={loading} style={{ backgroundColor: "#22c55e", padding: 16, borderRadius: 14, alignItems: "center" }}>
-        {loading ? <ActivityIndicator color="white" /> : <Text style={{ color: "white", fontSize: 16 }}>Save Subscription</Text>}
+      <Pressable style={styles.saveButton} onPress={save}>
+        <Text style={styles.saveText}>{saving ? 'Saving…' : 'Save'}</Text>
       </Pressable>
     </View>
-  );
+  )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#0B1020',
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 12,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#1E293B',
+    padding: 12,
+    color: '#fff',
+    marginBottom: 12,
+    borderRadius: 8,
+  },
+  saveButton: {
+    marginTop: 12,
+    backgroundColor: '#2563EB',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+})
+

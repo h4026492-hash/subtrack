@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, Pressable, FlatList } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { router } from 'expo-router'
+import api from '../lib/api'
 
 export default function Dashboard() {
   const [subscriptions, setSubscriptions] = useState<any[]>([])
@@ -11,7 +12,7 @@ export default function Dashboard() {
 
   const fetchSubscriptions = async () => {
     try {
-      const res = await axios.get('/subscriptions')
+      const res = await api.get('/subscriptions')
       setSubscriptions(res.data || [])
     } catch (e) {
       console.log('DASHBOARD ERROR', e)
@@ -33,28 +34,34 @@ export default function Dashboard() {
         </Text>
       </View>
 
-      {/* LIST */}
-      <FlatList
-        data={subscriptions}
-        keyExtractor={(_, i) => String(i)}
-        contentContainerStyle={{ paddingBottom: 120 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.cardLeft} />
-            <View style={styles.cardContent}>
-              <Text style={styles.plan}>
-                {item.name || 'Unknown Subscription'}
-              </Text>
-              <Text style={styles.meta}>
-                ${item.price} · {item.billingCycle || 'Monthly'}
-              </Text>
-            </View>
+      {/* LIST / EMPTY STATE */}
+      {subscriptions.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>No subscriptions yet</Text>
+          <Text style={styles.emptySubtitle}>
+            Add your first subscription to start tracking spending.
+          </Text>
+
+          <Pressable
+            style={styles.emptyButton}
+            onPress={() => router.push('/add')}
+          >
+            <Text style={styles.emptyButtonText}>Add subscription</Text>
+          </Pressable>
+        </View>
+      ) : (
+        subscriptions.map((s: any, index: number) => (
+          <View key={s.id ?? index} style={styles.item}>
+            <Text style={styles.plan}>{s.name ?? 'Untitled'}</Text>
+            <Text style={styles.meta}>
+              ${s.price} / {s.billingCycle ?? 'month'}
+            </Text>
           </View>
-        )}
-      />
+        ))
+      )}
 
       {/* FLOATING ADD */}
-      <Pressable style={styles.fab}>
+      <Pressable style={styles.fab} onPress={() => router.push('/add')}>
         <Text style={styles.fabText}>＋</Text>
       </Pressable>
     </View>
@@ -105,6 +112,39 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontSize: 14,
     color: '#9CA3AF',
+  },
+
+  emptyState: {
+    marginTop: 120,
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 15,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  emptyButton: {
+    backgroundColor: '#2563EB',
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 14,
+  },
+  emptyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  item: {
+    marginBottom: 12,
+    width: '100%',
   },
 
   fab: {
