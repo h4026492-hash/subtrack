@@ -1,28 +1,26 @@
-import React, { useState } from 'react'
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native'
-import { router } from 'expo-router'
+import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native'
+import { useState } from 'react'
+import { useRouter } from 'expo-router'
 import api from '../lib/api'
 
 export default function AddSubscription() {
+  const router = useRouter()
   const [name, setName] = useState('')
   const [price, setPrice] = useState('')
-  const [saving, setSaving] = useState(false)
 
   const save = async () => {
-    if (saving) return
-    setSaving(true)
+    if (!price) return
+
     try {
       await api.post('/subscriptions', {
-        name,
+        name: name || 'Untitled',
         price: Number(price),
         billingCycle: 'MONTHLY',
       })
 
       router.replace('/dashboard')
     } catch (e) {
-      console.log('SAVE ERROR', e)
-    } finally {
-      setSaving(false)
+      console.log('ADD SUB ERROR', e)
     }
   }
 
@@ -32,6 +30,7 @@ export default function AddSubscription() {
 
       <TextInput
         placeholder="Netflix"
+        placeholderTextColor="#6B7280"
         value={name}
         onChangeText={setName}
         style={styles.input}
@@ -39,6 +38,7 @@ export default function AddSubscription() {
 
       <TextInput
         placeholder="15"
+        placeholderTextColor="#6B7280"
         keyboardType="numeric"
         value={price}
         onChangeText={setPrice}
@@ -46,7 +46,7 @@ export default function AddSubscription() {
       />
 
       <Pressable style={styles.saveButton} onPress={save}>
-        <Text style={styles.saveText}>{saving ? 'Saving…' : 'Save'}</Text>
+        <Text style={styles.saveText}>Save</Text>
       </Pressable>
     </View>
   )
@@ -55,32 +55,36 @@ export default function AddSubscription() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#0B1020',
+    paddingTop: 80,
+    paddingHorizontal: 20,
+    backgroundColor: '#020617',
   },
   title: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: '700',
     color: '#fff',
-    marginBottom: 12,
+    marginBottom: 28,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#1E293B',
-    padding: 12,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: 16,
     color: '#fff',
-    marginBottom: 12,
-    borderRadius: 8,
+    fontSize: 16,
+    marginBottom: 16,
   },
   saveButton: {
-    marginTop: 12,
+    marginTop: 24,
+    height: 54,
+    borderRadius: 16,
     backgroundColor: '#2563EB',
-    padding: 14,
-    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   saveText: {
     color: '#fff',
+    fontSize: 17,
     fontWeight: '600',
   },
 })

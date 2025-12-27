@@ -1,68 +1,63 @@
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { useEffect, useState } from 'react'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import api from '../lib/api'
 
 export default function Dashboard() {
+  const router = useRouter()
   const [subscriptions, setSubscriptions] = useState<any[]>([])
 
   useEffect(() => {
-    fetchSubscriptions()
+    load()
   }, [])
 
-  const fetchSubscriptions = async () => {
+  const load = async () => {
     try {
       const res = await api.get('/subscriptions')
-      setSubscriptions(res.data || [])
+      setSubscriptions(res.data ?? [])
     } catch (e) {
-      console.log('DASHBOARD ERROR', e)
+      console.log('DASHBOARD LOAD ERROR', e)
     }
   }
 
-  const totalMonthly = subscriptions.reduce(
-    (sum, s) => sum + (s.price || 0),
-    0
-  )
-
   return (
     <View style={styles.container}>
-      {/* HEADER */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Subscriptions</Text>
-        <Text style={styles.subtitle}>
-          {subscriptions.length} active · ${totalMonthly} / month
-        </Text>
-      </View>
+      <Text style={styles.header}>Your Subscriptions</Text>
+      <Text style={styles.subHeader}>
+        {subscriptions.length} active · $
+        {subscriptions.reduce((a, b) => a + (b.price ?? 0), 0)} / month
+      </Text>
 
-      {/* LIST / EMPTY STATE */}
-      {subscriptions.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyTitle}>No subscriptions yet</Text>
-          <Text style={styles.emptySubtitle}>
-            Add your first subscription to start tracking spending.
-          </Text>
-
-          <Pressable
-            style={styles.emptyButton}
-            onPress={() => router.push('/add')}
-          >
-            <Text style={styles.emptyButtonText}>Add subscription</Text>
-          </Pressable>
-        </View>
-      ) : (
-        subscriptions.map((s: any, index: number) => (
-          <View key={s.id ?? index} style={styles.item}>
-            <Text style={styles.plan}>{s.name ?? 'Untitled'}</Text>
-            <Text style={styles.meta}>
-              ${s.price} / {s.billingCycle ?? 'month'}
+      <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+        {subscriptions.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Text style={styles.emptyTitle}>No subscriptions yet</Text>
+            <Text style={styles.emptySubtitle}>
+              Add your first subscription to start tracking spending.
             </Text>
-          </View>
-        ))
-      )}
 
-      {/* FLOATING ADD */}
+            <Pressable
+              style={styles.emptyButton}
+              onPress={() => router.push('/add')}
+            >
+              <Text style={styles.emptyButtonText}>Add subscription</Text>
+            </Pressable>
+          </View>
+        ) : (
+          subscriptions.map((s, index) => (
+            <View key={index} style={styles.card}>
+              <Text style={styles.plan}>{s.name ?? 'Untitled'}</Text>
+              <Text style={styles.meta}>
+                ${s.price} / {s.billingCycle ?? 'month'}
+              </Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      {/* Floating Action Button */}
       <Pressable style={styles.fab} onPress={() => router.push('/add')}>
-        <Text style={styles.fabText}>＋</Text>
+        <Text style={styles.fabIcon}>+</Text>
       </Pressable>
     </View>
   )
@@ -71,46 +66,34 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0B1020',
+    paddingTop: 70,
     paddingHorizontal: 20,
-    paddingTop: 60,
+    backgroundColor: '#020617',
   },
   header: {
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#fff',
   },
-  subtitle: {
+  subHeader: {
     marginTop: 6,
-    fontSize: 15,
     color: '#9CA3AF',
+    fontSize: 15,
   },
 
   card: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 18,
-    marginBottom: 16,
-    overflow: 'hidden',
-  },
-  cardLeft: {
-    width: 6,
-    backgroundColor: '#4F8CFF',
-  },
-  cardContent: {
+    marginTop: 16,
     padding: 18,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   plan: {
     fontSize: 18,
+    color: '#fff',
     fontWeight: '600',
-    color: '#FFFFFF',
   },
   meta: {
     marginTop: 4,
-    fontSize: 14,
     color: '#9CA3AF',
   },
 
@@ -142,26 +125,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  item: {
-    marginBottom: 12,
-    width: '100%',
-  },
 
   fab: {
     position: 'absolute',
-    right: 24,
+    right: 22,
     bottom: 32,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#4F8CFF',
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: '#3B82F6',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabText: {
+  fabIcon: {
+    color: '#fff',
     fontSize: 30,
-    color: '#FFFFFF',
-    marginTop: -2,
+    fontWeight: '600',
   },
 })
 
