@@ -2,6 +2,7 @@ import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import api from '../lib/api'
+import { resolveService } from '../lib/resolveService'
 
 export default function AddSubscription() {
   const router = useRouter()
@@ -12,10 +13,13 @@ export default function AddSubscription() {
     if (!price) return
 
     try {
+      const resolved = resolveService(name)
+
       await api.post('/subscriptions', {
-        name: name || 'Untitled',
+        name: resolved.name,
         price: Number(price),
         billingCycle: 'MONTHLY',
+        category: resolved.category,
       })
 
       router.replace('/dashboard')

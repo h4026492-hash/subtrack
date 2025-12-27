@@ -1,7 +1,8 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
 import api from '../lib/api'
+import { SERVICES } from '../lib/services'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -46,10 +47,22 @@ export default function Dashboard() {
         ) : (
           subscriptions.map((s, index) => (
             <View key={index} style={styles.card}>
-              <Text style={styles.plan}>{s.name ?? 'Untitled'}</Text>
-              <Text style={styles.meta}>
-                ${s.price} / {s.billingCycle ?? 'month'}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {SERVICES[s.name?.toLowerCase()]?.logo && (
+                  <Image
+                    source={SERVICES[s.name.toLowerCase()].logo}
+                    style={{ width: 32, height: 32, marginRight: 12 }}
+                    resizeMode="contain"
+                  />
+                )}
+
+                <View>
+                  <Text style={styles.plan}>{s.name ?? 'Untitled'}</Text>
+                  <Text style={styles.meta}>
+                    ${s.price} / {s.billingCycle ?? 'month'}
+                  </Text>
+                </View>
+              </View>
             </View>
           ))
         )}
