@@ -1,0 +1,4 @@
+Replace `assets/splash.png` with a 1242x2688 (or similar large) PNG that matches your brand.
+Recommended: dark gradient background (#0B1220) with centered logo.
+
+You can design this in Figma or Canva and export a PNG named `splash.png` into `assets/`.

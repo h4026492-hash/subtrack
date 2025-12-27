@@ -1,3 +1,73 @@
+# SubTrack
+
+SubTrack is a mobile-first subscription management app built with Expo (React Native) and a Spring Boot backend. It shows glass-style UI, animated dashboards, per-subscription AI insights, and a chat assistant — ready for local development and App Store submission.
+
+## Features
+- Glass-style UI with smooth animations and charts
+- Add / list / manage subscriptions with backend persistence
+- AI-powered per-subscription insight and chat assistant (POST /ai/chat)
+- JWT-based auth + secure token storage (SecureStore)
+- CI: TypeScript checks, backend tests, Postman E2E via GitHub Actions
+
+## Quick start
+1. Install deps:
+   - `npm install`
+2. Start backend:
+   - `./mvnw -pl subscriptionservice spring-boot:run` (or `mvn -pl subscriptionservice spring-boot:run`)
+3. Start mobile app:
+   - `npx expo start`
+4. Run tests locally:
+   - `npm run ci:test` (TypeScript + backend tests)
+5. Run the Postman collection:
+   - `npm i -g newman`
+   - `newman run postman/SubTrack.postman_collection.json --env-var baseUrl=http://localhost:8080`
+
+## End-to-end tests (Playwright)
+
+Run the E2E tests locally against the web build (you must start the expo web server first):
+
+1. Install Playwright browsers: `npm run e2e:install`
+2. Start the Expo web server: `npx expo start --web --port 8082`
+3. In another terminal, run: `npm run test:e2e`
+
+CI: a workflow `.github/workflows/e2e.yml` is included to run E2E tests on push and pull requests.
+
+## App Store checklist
+See `docs/APP_STORE_CHECKLIST.md` for required assets and steps.
+# Subtrack – Subscription Management App
+
+A full-stack subscription tracking application built with:
+
+• React Native (Expo)  
+• React Web  
+• Spring Boot microservices  
+
+## Features
+• Track monthly subscriptions  
+• Real-time backend integration  
+• Mobile & web clients  
+• Clean iOS-style UI  
+
+## Tech Stack
+Frontend: React, React Native, Expo Router  
+Backend: Java 17, Spring Boot, REST APIs  
+Tools: GitHub Copilot, Git, Maven  
+
+## Running Locally
+
+### Backend
+```bash
+cd subscriptionservice
+./mvnw spring-boot:run
+```
+
+### Mobile
+
+```bash
+cd subtrack-mobile
+npm install
+npm start
+```
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).

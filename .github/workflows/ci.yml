@@ -1,0 +1,9 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "This workflow is replaced by .github/workflows/ci-fixed.yml — noop job to avoid YAML errors"

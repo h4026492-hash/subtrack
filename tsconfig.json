@@ -1,7 +1,18 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+    "customConditions": ["react-native"],
+    "skipLibCheck": true,
     "strict": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
@@ -13,5 +24,7 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+  ],
+  "exclude": ["e2e", "node_modules"],
+  "extends": "expo/tsconfig.base"
 }
