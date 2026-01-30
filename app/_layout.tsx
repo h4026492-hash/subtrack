@@ -6,6 +6,7 @@ export default function RootLayout() {
       <Stack.Screen name="login" />
       <Stack.Screen name="dashboard" />
       <Stack.Screen name="add" />
+      <Stack.Screen name="healthscorecard" />
       <Stack.Screen name="subscription/[id]" />
     </Stack>
   )

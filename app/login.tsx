@@ -54,15 +54,12 @@ export default function Login() {
     setLoading(true)
 
     try {
-      console.log('LOGIN CLICKED')
-
       const res = await axios.post('http://localhost:8081/auth/login', {
         email,
         password,
       })
 
       const token = res.data?.token
-      console.log('TOKEN RECEIVED', token)
 
       if (!token) {
         throw new Error('Token missing')
@@ -73,7 +70,6 @@ export default function Login() {
       // 🔥 THIS LINE IS WHAT WAS MISSING / NOT RUNNING
       router.replace('/dashboard')
     } catch (err: any) {
-      console.log('LOGIN FAILED', err?.response?.status)
       Alert.alert('Login failed')
     } finally {
       setLoading(false)
@@ -175,4 +171,3 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
   },
 })
-

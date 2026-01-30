@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native'
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { useState } from 'react'
 import { useRouter } from 'expo-router'
 import api from '../lib/api'
@@ -24,7 +24,7 @@ export default function AddSubscription() {
 
       router.replace('/dashboard')
     } catch (e) {
-      console.log('ADD SUB ERROR', e)
+      Alert.alert('Could not save subscription')
     }
   }
 
@@ -92,4 +92,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-

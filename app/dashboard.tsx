@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, ScrollView, Image } from 'react-native'
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'expo-router'
 import api from '../lib/api'
@@ -17,7 +17,7 @@ export default function Dashboard() {
       const res = await api.get('/subscriptions')
       setSubscriptions(res.data ?? [])
     } catch (e) {
-      console.log('DASHBOARD LOAD ERROR', e)
+      Alert.alert('Could not load subscriptions')
     }
   }
 
@@ -69,8 +69,8 @@ export default function Dashboard() {
       </ScrollView>
 
       {/* Floating Action Button */}
-      <Pressable style={styles.fab} onPress={() => router.push('/add')}>
-        <Text style={styles.fabIcon}>+</Text>
+      <Pressable style={styles.fab} onPress={() => router.push('/healthscorecard')}>
+        <Text style={styles.fabIcon}>HS</Text>
       </Pressable>
     </View>
   )
@@ -156,7 +156,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 })
-
-
-
-
